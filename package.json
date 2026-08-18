@@ -6,13 +6,11 @@
     "node": ">=22.13.0"
   },
   "scripts": {
-    "install:ci": "bash scripts/install-ci.sh",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "validate:artifact": "bash scripts/validate-artifact.sh",
-    "lint": "bash scripts/sites-env.sh -- eslint . --ignore-pattern dist --ignore-pattern .next",
-    "db:generate": "bash scripts/sites-env.sh -- drizzle-kit generate"
+    "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
+    "db:generate": "drizzle-kit generate"
   },
   "dependencies": {
     "drizzle-orm": "0.45.2",
