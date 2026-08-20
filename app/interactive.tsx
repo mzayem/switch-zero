@@ -193,6 +193,14 @@ type EnquiryStatus = "idle" | "sending" | "success" | "error";
 export function EnquiryForm({ compact = false }: { compact?: boolean }) {
   const [status, setStatus] = useState<EnquiryStatus>("idle");
   const [message, setMessage] = useState("");
+  const [postcode, setPostcode] = useState("");
+
+  useEffect(() => {
+    const postcodeParam = new URLSearchParams(window.location.search).get("postcode");
+    if (!postcodeParam) return;
+    const timer = window.setTimeout(() => setPostcode(postcodeParam), 0);
+    return () => window.clearTimeout(timer);
+  }, []);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -201,6 +209,7 @@ export function EnquiryForm({ compact = false }: { compact?: boolean }) {
     data.set("sourcePage", window.location.pathname);
     const query = new URLSearchParams(window.location.search);
     ["utm_source", "utm_medium", "utm_campaign"].forEach((key) => data.set(key, query.get(key) ?? ""));
+    data.set("initialInterest", query.get("service") ?? "");
     setStatus("sending");
     setMessage("");
 
@@ -211,6 +220,7 @@ export function EnquiryForm({ compact = false }: { compact?: boolean }) {
       setStatus("success");
       setMessage(payload.message || "Thank you. Your enquiry has been received.");
       form.reset();
+      setPostcode("");
     } catch (error) {
       setStatus("error");
       setMessage(error instanceof Error ? error.message : "We could not send the enquiry. Please try again.");
@@ -226,7 +236,7 @@ export function EnquiryForm({ compact = false }: { compact?: boolean }) {
         {!compact && <label>Job title<input name="jobTitle" autoComplete="organization-title" /></label>}
         <label>Work email<input name="email" type="email" autoComplete="email" required /></label>
         <label>Telephone<input name="telephone" type="tel" autoComplete="tel" /></label>
-        {!compact && <label>Business postcode<input name="postcode" autoComplete="postal-code" /></label>}
+        {!compact && <label>Business postcode<input name="postcode" autoComplete="postal-code" value={postcode} onChange={(event) => setPostcode(event.currentTarget.value)} /></label>}
         {!compact && <label>Number of sites<input name="siteCount" type="number" min="1" defaultValue="1" /></label>}
         <label>Enquiry relates to
           <select name="service" defaultValue="Tariff switching" required>

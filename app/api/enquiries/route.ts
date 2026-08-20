@@ -1,3 +1,7 @@
+import nodemailer from "nodemailer";
+
+export const runtime = "nodejs";
+
 const allowedFiles = new Set(["application/pdf", "image/jpeg", "image/png"]);
 const maxFileSize = 8 * 1024 * 1024;
 
@@ -16,16 +20,6 @@ const htmlEscapes: Record<string, string> = {
 
 function escapeHtml(text: string) {
   return text.replace(/[&<>"']/g, (char) => htmlEscapes[char]);
-}
-
-async function fileToBase64(file: File) {
-  const bytes = new Uint8Array(await file.arrayBuffer());
-  let binary = "";
-  const chunkSize = 0x8000;
-  for (let i = 0; i < bytes.length; i += chunkSize) {
-    binary += String.fromCharCode(...bytes.subarray(i, i + chunkSize));
-  }
-  return btoa(binary);
 }
 
 export async function POST(request: Request) {
@@ -63,8 +57,8 @@ export async function POST(request: Request) {
 
     const attachments: {
       filename: string;
-      content: string;
-      mimeType?: string;
+      content: Buffer;
+      contentType?: string;
     }[] = [];
     const bill = form.get("bill");
     if (bill instanceof File && bill.size > 0) {
@@ -80,8 +74,8 @@ export async function POST(request: Request) {
         );
       attachments.push({
         filename: bill.name || "utility-bill",
-        content: await fileToBase64(bill),
-        mimeType: bill.type,
+        content: Buffer.from(await bill.arrayBuffer()),
+        contentType: bill.type,
       });
     }
 
@@ -95,6 +89,7 @@ export async function POST(request: Request) {
         ["Postcode", value(form, "postcode", 20)],
         ["Number of sites", value(form, "siteCount", 5)],
         ["Enquiry relates to", service],
+        ["Initial interest (from homepage)", value(form, "initialInterest", 120)],
         ["Electricity, gas or both", value(form, "fuel", 40)],
         ["Contract end date", value(form, "contractEnd", 20)],
         ["Estimated annual spend", value(form, "annualSpend", 60)],
@@ -141,26 +136,22 @@ export async function POST(request: Request) {
       );
     }
 
-    const { WorkerMailer } = await import("worker-mailer");
-    await WorkerMailer.send(
-      {
-        host: smtpHost,
-        port: smtpPort,
-        secure: smtpPort === 465,
-        startTls: smtpPort !== 465,
-        credentials: { username: smtpUser, password: smtpPass },
-        authType: ["login", "plain"],
-      },
-      {
-        from: { name: "SwitchZero website", email: smtpUser },
-        to: toAddress,
-        reply: { name: fullName, email },
-        subject: `New enquiry: ${service} — ${company}`,
-        text,
-        html,
-        attachments: attachments.length ? attachments : undefined,
-      },
-    );
+    const transporter = nodemailer.createTransport({
+      host: smtpHost,
+      port: smtpPort,
+      secure: smtpPort === 465,
+      auth: { user: smtpUser, pass: smtpPass },
+    });
+
+    await transporter.sendMail({
+      from: `"SwitchZero website" <${smtpUser}>`,
+      to: toAddress,
+      replyTo: `"${fullName}" <${email}>`,
+      subject: `New enquiry: ${service} — ${company}`,
+      text,
+      html,
+      attachments: attachments.length ? attachments : undefined,
+    });
 
     return Response.json(
       {
