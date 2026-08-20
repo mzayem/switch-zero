@@ -1,5 +1,4 @@
-import { getDb } from "../../../db";
-import { enquiries } from "../../../db/schema";
+import { WorkerMailer } from "worker-mailer";
 
 const allowedFiles = new Set(["application/pdf", "image/jpeg", "image/png"]);
 const maxFileSize = 8 * 1024 * 1024;
@@ -9,20 +8,30 @@ function value(form: FormData, name: string, max = 500) {
   return typeof item === "string" ? item.trim().slice(0, max) : "";
 }
 
-function safeFilename(name: string) {
-  const base = name.split(/[\\/]/).pop() || "utility-bill";
-  return base.replace(/[^a-zA-Z0-9._-]+/g, "-").slice(0, 120);
+const htmlEscapes: Record<string, string> = {
+  "&": "&amp;",
+  "<": "&lt;",
+  ">": "&gt;",
+  '"': "&quot;",
+  "'": "&#39;",
+};
+
+function escapeHtml(text: string) {
+  return text.replace(/[&<>"']/g, (char) => htmlEscapes[char]);
+}
+
+async function fileToBase64(file: File) {
+  const bytes = new Uint8Array(await file.arrayBuffer());
+  let binary = "";
+  const chunkSize = 0x8000;
+  for (let i = 0; i < bytes.length; i += chunkSize) {
+    binary += String.fromCharCode(...bytes.subarray(i, i + chunkSize));
+  }
+  return btoa(binary);
 }
 
 export async function POST(request: Request) {
-  let uploadKey = "";
-  let runtimeEnv: { DB: D1Database; BUCKET: R2Bucket } | null = null;
   try {
-    const cloudflare = await import("cloudflare:workers");
-    runtimeEnv = cloudflare.env as unknown as {
-      DB: D1Database;
-      BUCKET: R2Bucket;
-    };
     const form = await request.formData();
     if (value(form, "website"))
       return Response.json({ message: "Thank you." }, { status: 201 });
@@ -54,12 +63,8 @@ export async function POST(request: Request) {
       );
     }
 
-    const publicId = crypto.randomUUID();
+    const attachments: { filename: string; content: string; mimeType?: string }[] = [];
     const bill = form.get("bill");
-    let uploadName: string | null = null;
-    let uploadType: string | null = null;
-    let uploadSize: number | null = null;
-
     if (bill instanceof File && bill.size > 0) {
       if (!allowedFiles.has(bill.type))
         return Response.json(
@@ -71,46 +76,86 @@ export async function POST(request: Request) {
           { error: "The bill file must be 8 MB or smaller." },
           { status: 400 },
         );
-      uploadName = safeFilename(bill.name);
-      uploadType = bill.type;
-      uploadSize = bill.size;
-      uploadKey = `private-enquiries/${new Date().toISOString().slice(0, 10)}/${publicId}/${uploadName}`;
-      await runtimeEnv.BUCKET.put(uploadKey, bill.stream(), {
-        httpMetadata: { contentType: bill.type },
-        customMetadata: { enquiryId: publicId },
+      attachments.push({
+        filename: bill.name || "utility-bill",
+        content: await fileToBase64(bill),
+        mimeType: bill.type,
       });
     }
 
-    const siteCountValue = Number(value(form, "siteCount", 5));
-    await getDb(runtimeEnv.DB)
-      .insert(enquiries)
-      .values({
-        publicId,
-        fullName,
-        company,
-        jobTitle: value(form, "jobTitle", 120) || null,
-        email,
-        telephone: value(form, "telephone", 60) || null,
-        postcode: value(form, "postcode", 20) || null,
-        siteCount:
-          Number.isFinite(siteCountValue) && siteCountValue > 0
-            ? siteCountValue
-            : null,
-        service,
-        fuel: value(form, "fuel", 40) || null,
-        contractEnd: value(form, "contractEnd", 20) || null,
-        annualSpend: value(form, "annualSpend", 60) || null,
-        message,
-        sourcePage: value(form, "sourcePage", 500) || "/contact",
-        utmSource: value(form, "utm_source", 200) || null,
-        utmMedium: value(form, "utm_medium", 200) || null,
-        utmCampaign: value(form, "utm_campaign", 200) || null,
-        consentStatus: "enquiry-response",
-        uploadKey: uploadKey || null,
-        uploadName,
-        uploadType,
-        uploadSize,
-      });
+    const fields: [string, string][] = [
+      ["Full name", fullName],
+      ["Company", company],
+      ["Job title", value(form, "jobTitle", 120)],
+      ["Work email", email],
+      ["Telephone", value(form, "telephone", 60)],
+      ["Postcode", value(form, "postcode", 20)],
+      ["Number of sites", value(form, "siteCount", 5)],
+      ["Enquiry relates to", service],
+      ["Electricity, gas or both", value(form, "fuel", 40)],
+      ["Contract end date", value(form, "contractEnd", 20)],
+      ["Estimated annual spend", value(form, "annualSpend", 60)],
+      ["Source page", value(form, "sourcePage", 500) || "/contact"],
+      ["UTM source", value(form, "utm_source", 200)],
+      ["UTM medium", value(form, "utm_medium", 200)],
+      ["UTM campaign", value(form, "utm_campaign", 200)],
+    ].filter(([, fieldValue]) => fieldValue);
+
+    const text = [
+      ...fields.map(([label, fieldValue]) => `${label}: ${fieldValue}`),
+      "",
+      "Message:",
+      message,
+    ].join("\n");
+
+    const html = `
+      <table cellpadding="6" cellspacing="0" style="border-collapse:collapse">
+        ${fields
+          .map(
+            ([label, fieldValue]) =>
+              `<tr><td style="color:#666"><strong>${escapeHtml(label)}</strong></td><td>${escapeHtml(fieldValue)}</td></tr>`,
+          )
+          .join("")}
+      </table>
+      <p><strong>Message</strong></p>
+      <p>${escapeHtml(message).replace(/\n/g, "<br />")}</p>
+    `;
+
+    const smtpHost = process.env.SMTP_HOST || "mail.privateemail.com";
+    const smtpPort = Number(process.env.SMTP_PORT) || 465;
+    const smtpUser = process.env.SMTP_USER;
+    const smtpPass = process.env.SMTP_PASS;
+    const toAddress = process.env.CONTACT_TO_EMAIL || smtpUser;
+
+    if (!smtpUser || !smtpPass || !toAddress) {
+      console.error(
+        "SMTP is not configured. Set SMTP_USER, SMTP_PASS and (optionally) CONTACT_TO_EMAIL.",
+      );
+      return Response.json(
+        { error: "The enquiry could not be sent. Please try again shortly." },
+        { status: 500 },
+      );
+    }
+
+    await WorkerMailer.send(
+      {
+        host: smtpHost,
+        port: smtpPort,
+        secure: smtpPort === 465,
+        startTls: smtpPort !== 465,
+        credentials: { username: smtpUser, password: smtpPass },
+        authType: ["login", "plain"],
+      },
+      {
+        from: { name: "SwitchZero website", email: smtpUser },
+        to: toAddress,
+        reply: { name: fullName, email },
+        subject: `New enquiry: ${service} — ${company}`,
+        text,
+        html,
+        attachments: attachments.length ? attachments : undefined,
+      },
+    );
 
     return Response.json(
       {
@@ -120,8 +165,6 @@ export async function POST(request: Request) {
       { status: 201 },
     );
   } catch (error) {
-    if (uploadKey && runtimeEnv)
-      await runtimeEnv.BUCKET.delete(uploadKey).catch(() => undefined);
     console.error("Enquiry submission failed", error);
     return Response.json(
       { error: "The enquiry could not be sent. Please try again shortly." },
