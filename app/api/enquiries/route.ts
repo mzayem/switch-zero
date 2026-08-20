@@ -1,5 +1,3 @@
-import { WorkerMailer } from "worker-mailer";
-
 const allowedFiles = new Set(["application/pdf", "image/jpeg", "image/png"]);
 const maxFileSize = 8 * 1024 * 1024;
 
@@ -63,7 +61,11 @@ export async function POST(request: Request) {
       );
     }
 
-    const attachments: { filename: string; content: string; mimeType?: string }[] = [];
+    const attachments: {
+      filename: string;
+      content: string;
+      mimeType?: string;
+    }[] = [];
     const bill = form.get("bill");
     if (bill instanceof File && bill.size > 0) {
       if (!allowedFiles.has(bill.type))
@@ -83,23 +85,25 @@ export async function POST(request: Request) {
       });
     }
 
-    const fields: [string, string][] = [
-      ["Full name", fullName],
-      ["Company", company],
-      ["Job title", value(form, "jobTitle", 120)],
-      ["Work email", email],
-      ["Telephone", value(form, "telephone", 60)],
-      ["Postcode", value(form, "postcode", 20)],
-      ["Number of sites", value(form, "siteCount", 5)],
-      ["Enquiry relates to", service],
-      ["Electricity, gas or both", value(form, "fuel", 40)],
-      ["Contract end date", value(form, "contractEnd", 20)],
-      ["Estimated annual spend", value(form, "annualSpend", 60)],
-      ["Source page", value(form, "sourcePage", 500) || "/contact"],
-      ["UTM source", value(form, "utm_source", 200)],
-      ["UTM medium", value(form, "utm_medium", 200)],
-      ["UTM campaign", value(form, "utm_campaign", 200)],
-    ].filter(([, fieldValue]) => fieldValue);
+    const fields = (
+      [
+        ["Full name", fullName],
+        ["Company", company],
+        ["Job title", value(form, "jobTitle", 120)],
+        ["Work email", email],
+        ["Telephone", value(form, "telephone", 60)],
+        ["Postcode", value(form, "postcode", 20)],
+        ["Number of sites", value(form, "siteCount", 5)],
+        ["Enquiry relates to", service],
+        ["Electricity, gas or both", value(form, "fuel", 40)],
+        ["Contract end date", value(form, "contractEnd", 20)],
+        ["Estimated annual spend", value(form, "annualSpend", 60)],
+        ["Source page", value(form, "sourcePage", 500) || "/contact"],
+        ["UTM source", value(form, "utm_source", 200)],
+        ["UTM medium", value(form, "utm_medium", 200)],
+        ["UTM campaign", value(form, "utm_campaign", 200)],
+      ] as [string, string][]
+    ).filter(([, fieldValue]) => fieldValue);
 
     const text = [
       ...fields.map(([label, fieldValue]) => `${label}: ${fieldValue}`),
@@ -137,6 +141,7 @@ export async function POST(request: Request) {
       );
     }
 
+    const { WorkerMailer } = await import("worker-mailer");
     await WorkerMailer.send(
       {
         host: smtpHost,
