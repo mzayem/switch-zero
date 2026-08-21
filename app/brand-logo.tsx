@@ -1,14 +1,34 @@
 import Image from "next/image";
 
-export function BrandLogo({ className = "" }: { className?: string }) {
+type LogoSurface = "teal" | "white";
+
+type LogoAsset = {
+  src: string;
+  width: number;
+  height: number;
+};
+
+const lockupLogoBySurface: Record<LogoSurface, LogoAsset> = {
+  teal: { src: "/assets/switchzero-logo-teal-lockup.png", width: 720, height: 84 },
+  white: { src: "/assets/switchzero-logo-white-lockup.png", width: 709, height: 83 },
+};
+
+const roundLogoBySurface: Record<LogoSurface, LogoAsset> = {
+  teal: { src: "/assets/switchzero-logo-teal.png", width: 1080, height: 1080 },
+  white: { src: "/assets/switchzero-logo-white.png", width: 1080, height: 1080 },
+};
+
+export function BrandLogo({ className = "", surface = "teal" }: { className?: string; surface?: LogoSurface }) {
+  const logo = lockupLogoBySurface[surface];
+
   return (
-    <span className={`brand-lockup ${className}`.trim()}>
+    <span className={`brand-lockup brand-lockup--${surface} ${className}`.trim()}>
       <Image
         className="brand-lockup-image"
-        src="/assets/switchzero-logo.jpeg"
+        src={logo.src}
         alt="SwitchZero"
-        width={1951}
-        height={806}
+        width={logo.width}
+        height={logo.height}
         priority
         unoptimized
       />
@@ -16,15 +36,17 @@ export function BrandLogo({ className = "" }: { className?: string }) {
   );
 }
 
-export function RoundBrandLogo({ className = "" }: { className?: string }) {
+export function RoundBrandLogo({ className = "", surface = "teal" }: { className?: string; surface?: LogoSurface }) {
+  const logo = roundLogoBySurface[surface];
+
   return (
-    <span className={`round-brand-logo ${className}`.trim()}>
+    <span className={`round-brand-logo round-brand-logo--${surface} ${className}`.trim()}>
       <Image
         className="round-brand-logo-image"
-        src="/assets/switchzero-round-logo.jpeg"
+        src={logo.src}
         alt="SwitchZero"
-        width={1254}
-        height={1254}
+        width={logo.width}
+        height={logo.height}
         unoptimized
       />
     </span>

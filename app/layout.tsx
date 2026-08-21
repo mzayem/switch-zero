@@ -35,8 +35,16 @@ export const metadata: Metadata = {
     locale: "en_GB",
     siteName: "SwitchZero",
     title: "Helping Businesses Buy Energy Better",
-    description: "Commercial procurement first. Clearer decisions on contracts, consumption and on-site generation.",
-    images: [{ url: "/assets/switchzero-logo.jpeg", width: 1951, height: 806, alt: "SwitchZero - Helping Businesses Buy Energy Better" }],
+    description:
+      "Commercial procurement first. Clearer decisions on contracts, consumption and on-site generation.",
+    images: [
+      {
+        url: "/assets/switchzero-logo-teal.png",
+        width: 1080,
+        height: 1080,
+        alt: "SwitchZero - Helping Businesses Buy Energy Better",
+      },
+    ],
   },
   robots: { index: true, follow: true },
   other: {
@@ -58,7 +66,9 @@ export default function RootLayout({
       <body
         className={`${manrope.variable} ${outfit.variable} ${geistMono.variable} antialiased`}
       >
-        <a className="skip-link" href="#main-content">Skip to content</a>
+        <a className="skip-link" href="#main-content">
+          Skip to content
+        </a>
         <SiteHeader />
         {children}
         <Footer />
@@ -82,7 +92,8 @@ export default function RootLayout({
                 addressCountry: "GB",
               },
               areaServed: { "@type": "Country", name: "United Kingdom" },
-              description: "Commercial energy procurement and energy strategy support for UK organisations.",
+              description:
+                "Commercial energy procurement and energy strategy support for UK organisations.",
             }),
           }}
         />
