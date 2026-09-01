@@ -1,7 +1,7 @@
 export type Faq = { question: string; answer: string };
 
 export const companyDetails = {
-  name: "SwitchZero Ltd",
+  name: "Switchtozero Ltd",
   email: "info@switchzero.co.uk",
   emailHref: "mailto:info@switchzero.co.uk",
   phone: "01633 846 927",
