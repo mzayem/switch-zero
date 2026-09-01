@@ -49,7 +49,7 @@ export function SiteHeader() {
         <div className="shell announcement-inner">
           <div
             className="announcement-contact"
-            aria-label="SwitchZero contact details"
+            aria-label="SwitchtoZero contact details"
           >
             <a href={companyDetails.emailHref}>{companyDetails.email}</a>
             <span aria-hidden="true">·</span>
@@ -59,7 +59,7 @@ export function SiteHeader() {
         </div>
       </div>
       <div className="shell nav-wrap">
-        <Link className="logo-link" href="/" aria-label="SwitchZero home">
+        <Link className="logo-link" href="/" aria-label="SwitchtoZerohome">
           <BrandLogo />
         </Link>
 
@@ -147,7 +147,10 @@ export function SiteHeader() {
           </Link>
         </nav>
 
-        <div className="header-socials" aria-label="SwitchZero social profiles">
+        <div
+          className="header-socials"
+          aria-label="SwitchtoZero social profiles"
+        >
           {(["Instagram", "LinkedIn", "Facebook"] as const).map((name) => (
             <span
               className="social-link"
@@ -531,7 +534,7 @@ export function EnquiryForm({ compact = false }: { compact?: boolean }) {
       <label className="consent">
         <input name="consent" type="checkbox" value="yes" required />
         <span>
-          I agree that Switchtozero Ltd may use these details to respond to this
+          I agree that SwitchtoZero Ltd may use these details to respond to this
           enquiry. See the <Link href="/privacy">privacy policy</Link>.
         </span>
       </label>

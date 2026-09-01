@@ -995,7 +995,10 @@ function ContactPage() {
               </div>
               <div>
                 <small>Company registration</small>
-                <b>Registered in England and Wales</b>
+                <b>
+                  Registered in England and Wales, company number{" "}
+                  {companyDetails.companyNumber}
+                </b>
               </div>
             </address>
             <div className="contact-points">

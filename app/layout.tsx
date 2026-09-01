@@ -24,8 +24,8 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL("https://switchzero.co.uk"),
   title: {
-    default: "SwitchZero | Helping Businesses Buy Energy Better",
-    template: "%s | SwitchZero",
+    default: "SwitchtoZero | Helping Businesses Buy Energy Better",
+    template: "%s | SwitchtoZero",
   },
   description:
     "Commercial energy procurement for UK organisations, with support for efficiency, solar PV, battery storage, monitoring and finance.",
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_GB",
-    siteName: "SwitchZero",
+    siteName: "SwitchtoZero",
     title: "Helping Businesses Buy Energy Better",
     description:
       "Commercial procurement first. Clearer decisions on contracts, consumption and on-site generation.",
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
         url: "/assets/switchzero-logo-teal.png",
         width: 1080,
         height: 1080,
-        alt: "SwitchZero - Helping Businesses Buy Energy Better",
+        alt: "SwitchtoZero - Helping Businesses Buy Energy Better",
       },
     ],
   },
@@ -79,7 +79,7 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "ProfessionalService",
-              name: "SwitchZero",
+              name: "SwitchtoZero",
               legalName: companyDetails.name,
               url: "https://switchzero.co.uk",
               email: companyDetails.email,

@@ -1,13 +1,14 @@
 export type Faq = { question: string; answer: string };
 
 export const companyDetails = {
-  name: "Switchtozero Ltd",
+  name: "SwitchtoZero Ltd",
   email: "info@switchzero.co.uk",
   emailHref: "mailto:info@switchzero.co.uk",
   phone: "01633 846 927",
   phoneHref: "tel:+441633846927",
   address: "St. Christophers Bungalow, Caerleon, NP18 1AA",
   registration: "Company registered in England and Wales",
+  companyNumber: "17430183",
 };
 
 export type Service = {
@@ -725,7 +726,7 @@ export const homeFaqs: Faq[] = [
       "Procurement windows vary by supplier, meter and market. Starting early gives time to verify information and decide when to request prices without being cornered by a deadline.",
   },
   {
-    question: "Does SwitchZero charge a fee?",
+    question: "Does SwitchtoZerocharge a fee?",
     answer:
       "The payment route will be explained before you proceed. Some work may be paid through supplier commission and some projects may use a separate agreed fee, depending on scope.",
   },
