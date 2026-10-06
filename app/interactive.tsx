@@ -338,7 +338,6 @@ export function EnquiryForm({ compact = false }: { compact?: boolean }) {
     event.preventDefault();
     const form = event.currentTarget;
     const data = new FormData(form);
-    data.set("sourcePage", window.location.pathname);
     const query = new URLSearchParams(window.location.search);
     ["utm_source", "utm_medium", "utm_campaign"].forEach((key) =>
       data.set(key, query.get(key) ?? ""),

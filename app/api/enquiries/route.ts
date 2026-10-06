@@ -101,7 +101,6 @@ export async function POST(request: Request) {
         ["Gas contract ends", value(form, "gasRenewal", 40)],
         ["Role in energy decisions", value(form, "role", 60)],
         ["Indicative estimate", value(form, "estimate", 120)],
-        ["Source page", value(form, "sourcePage", 500) || "/contact"],
         ["UTM source", value(form, "utm_source", 200)],
         ["UTM medium", value(form, "utm_medium", 200)],
         ["UTM campaign", value(form, "utm_campaign", 200)],

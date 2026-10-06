@@ -344,7 +344,6 @@ export function BusinessReviewForm() {
       estimate: estimateText,
       message,
       consent: "yes",
-      sourcePage: window.location.pathname,
       utm_source: query.get("utm_source") ?? "",
       utm_medium: query.get("utm_medium") ?? "",
       utm_campaign: query.get("utm_campaign") ?? "",
