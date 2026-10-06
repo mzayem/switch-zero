@@ -172,54 +172,6 @@ export function SiteHeader() {
   );
 }
 
-export function HeroLeadForm() {
-  const [postcode, setPostcode] = useState("");
-  const [service, setService] = useState("Electricity and gas");
-
-  function submit(event: FormEvent) {
-    event.preventDefault();
-    const params = new URLSearchParams({ postcode, service });
-    window.location.href = `/contact?${params.toString()}`;
-  }
-
-  return (
-    <form className="hero-lead" onSubmit={submit}>
-      <p className="hero-lead-label">
-        <span>01</span> Start with your organisation
-      </p>
-      <label>
-        Business postcode
-        <input
-          value={postcode}
-          onInput={(event) => setPostcode(event.currentTarget.value)}
-          placeholder="e.g. CF10 1AA"
-          required
-        />
-      </label>
-      <label>
-        What should we review?
-        <select
-          value={service}
-          onChange={(event) => setService(event.target.value)}
-        >
-          <option>Electricity and gas</option>
-          <option>Business electricity</option>
-          <option>Business gas</option>
-          <option>Multi-site portfolio</option>
-          <option>Solar, storage or efficiency</option>
-        </select>
-      </label>
-      <button className="button button-primary button-wide" type="submit">
-        Continue my review
-      </button>
-      <p className="privacy-line">
-        No obligation. We will ask for the details needed to review your
-        position properly.
-      </p>
-    </form>
-  );
-}
-
 function numberValue(value: string) {
   const parsed = Number(value.replace(/,/g, ""));
   return Number.isFinite(parsed) ? parsed : 0;
@@ -523,7 +475,7 @@ export function EnquiryForm({ compact = false }: { compact?: boolean }) {
       </label>
       {!compact && (
         <label className="file-field">
-          Recent utility bill <span>PDF, JPG or PNG · maximum 8 MB</span>
+          Recent utility bill <span>PDF, JPG or PNG · maximum 3 MB</span>
           <input
             name="bill"
             type="file"

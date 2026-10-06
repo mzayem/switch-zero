@@ -1,9 +1,9 @@
-import nodemailer from "nodemailer";
+import { maxAttachmentBytes, sendGraphMail } from "./graph-mail";
 
 export const runtime = "nodejs";
 
 const allowedFiles = new Set(["application/pdf", "image/jpeg", "image/png"]);
-const maxFileSize = 8 * 1024 * 1024;
+const maxFileSize = maxAttachmentBytes;
 
 function value(form: FormData, name: string, max = 500) {
   const item = form.get(name);
@@ -56,9 +56,9 @@ export async function POST(request: Request) {
     }
 
     const attachments: {
-      filename: string;
-      content: Buffer;
-      contentType?: string;
+      name: string;
+      contentType: string;
+      bytes: Uint8Array;
     }[] = [];
     const bill = form.get("bill");
     if (bill instanceof File && bill.size > 0) {
@@ -69,13 +69,13 @@ export async function POST(request: Request) {
         );
       if (bill.size > maxFileSize)
         return Response.json(
-          { error: "The bill file must be 8 MB or smaller." },
+          { error: "The bill file must be 3 MB or smaller." },
           { status: 400 },
         );
       attachments.push({
-        filename: bill.name || "utility-bill",
-        content: Buffer.from(await bill.arrayBuffer()),
+        name: bill.name || "utility-bill",
         contentType: bill.type,
+        bytes: new Uint8Array(await bill.arrayBuffer()),
       });
     }
 
@@ -86,26 +86,27 @@ export async function POST(request: Request) {
         ["Job title", value(form, "jobTitle", 120)],
         ["Work email", email],
         ["Telephone", value(form, "telephone", 60)],
+        ["Company number", value(form, "companyNumber", 12)],
         ["Postcode", value(form, "postcode", 20)],
+        ["Premises address", value(form, "address", 300)],
+        ["Business type", value(form, "businessType", 120)],
         ["Number of sites", value(form, "siteCount", 5)],
         ["Enquiry relates to", service],
         ["Initial interest (from homepage)", value(form, "initialInterest", 120)],
         ["Electricity, gas or both", value(form, "fuel", 40)],
         ["Contract end date", value(form, "contractEnd", 20)],
         ["Estimated annual spend", value(form, "annualSpend", 60)],
+        ["Monthly spend", value(form, "monthlySpend", 60)],
+        ["Electricity contract ends", value(form, "electricityRenewal", 40)],
+        ["Gas contract ends", value(form, "gasRenewal", 40)],
+        ["Role in energy decisions", value(form, "role", 60)],
+        ["Indicative estimate", value(form, "estimate", 120)],
         ["Source page", value(form, "sourcePage", 500) || "/contact"],
         ["UTM source", value(form, "utm_source", 200)],
         ["UTM medium", value(form, "utm_medium", 200)],
         ["UTM campaign", value(form, "utm_campaign", 200)],
       ] as [string, string][]
     ).filter(([, fieldValue]) => fieldValue);
-
-    const text = [
-      ...fields.map(([label, fieldValue]) => `${label}: ${fieldValue}`),
-      "",
-      "Message:",
-      message,
-    ].join("\n");
 
     const html = `
       <table cellpadding="6" cellspacing="0" style="border-collapse:collapse">
@@ -120,37 +121,21 @@ export async function POST(request: Request) {
       <p>${escapeHtml(message).replace(/\n/g, "<br />")}</p>
     `;
 
-    const smtpHost = process.env.SMTP_HOST || "mail.privateemail.com";
-    const smtpPort = Number(process.env.SMTP_PORT) || 465;
-    const smtpUser = process.env.SMTP_USER;
-    const smtpPass = process.env.SMTP_PASS;
-    const toAddress = process.env.CONTACT_TO_EMAIL || smtpUser;
-
-    if (!smtpUser || !smtpPass || !toAddress) {
-      console.error(
-        "SMTP is not configured. Set SMTP_USER, SMTP_PASS and (optionally) CONTACT_TO_EMAIL.",
-      );
+    const toAddress = process.env.CONTACT_TO_EMAIL || process.env.MAIL_FROM;
+    if (!toAddress) {
+      console.error("Mail is not configured. Set CONTACT_TO_EMAIL or MAIL_FROM.");
       return Response.json(
         { error: "The enquiry could not be sent. Please try again shortly." },
         { status: 500 },
       );
     }
 
-    const transporter = nodemailer.createTransport({
-      host: smtpHost,
-      port: smtpPort,
-      secure: smtpPort === 465,
-      auth: { user: smtpUser, pass: smtpPass },
-    });
-
-    await transporter.sendMail({
-      from: `"SwitchZero website" <${smtpUser}>`,
-      to: toAddress,
-      replyTo: `"${fullName}" <${email}>`,
+    await sendGraphMail({
+      to: { address: toAddress },
+      replyTo: { address: email, name: fullName },
       subject: `New enquiry: ${service} — ${company}`,
-      text,
       html,
-      attachments: attachments.length ? attachments : undefined,
+      attachments,
     });
 
     return Response.json(

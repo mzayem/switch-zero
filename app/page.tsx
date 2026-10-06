@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
-import { HeroLeadForm, SavingsCalculator } from "./interactive";
+import { SavingsCalculator } from "./interactive";
+import { BusinessReviewForm } from "./business-review-form";
 import { BrandLogo } from "./brand-logo";
 import { homeFaqs, industries, insightArticles, services } from "./site-data";
 import { FinalCta } from "./site-chrome";
@@ -72,7 +73,7 @@ export default function Home() {
               <li>One point of contact</li>
             </ul>
           </div>
-          <HeroLeadForm />
+          <BusinessReviewForm />
         </div>
         <div className="hero-lower">
           <div className="shell hero-lower-inner">
