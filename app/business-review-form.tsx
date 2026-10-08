@@ -23,8 +23,8 @@ import {
 
 const steps = ["Your business", "Your energy", "Your estimate"];
 
-// Full send_to value from the Google Ads event snippet, e.g. "AW-18470249647/AbC123".
-const adsConversion = process.env.NEXT_PUBLIC_GOOGLE_ADS_ENQUIRY_CONVERSION;
+// send_to value from the Google Ads "Submit lead form" event snippet.
+const adsConversion = "AW-18470249647/06dMCJXarJUdEK_JpudE";
 
 declare global {
   interface Window {
