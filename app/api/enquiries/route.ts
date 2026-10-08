@@ -141,6 +141,7 @@ export async function POST(request: Request) {
       {
         message:
           "Thank you. Your enquiry has been received and will be reviewed by SwitchZero.",
+        enquiryId: crypto.randomUUID(),
       },
       { status: 201 },
     );

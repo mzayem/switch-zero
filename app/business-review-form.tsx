@@ -23,6 +23,25 @@ import {
 
 const steps = ["Your business", "Your energy", "Your estimate"];
 
+// Full send_to value from the Google Ads event snippet, e.g. "AW-18470249647/AbC123".
+const adsConversion = process.env.NEXT_PUBLIC_GOOGLE_ADS_ENQUIRY_CONVERSION;
+
+declare global {
+  interface Window {
+    gtag?: (...args: unknown[]) => void;
+  }
+}
+
+// Fires only after the server confirms the enquiry was sent. The enquiry id is
+// passed as transaction_id so Google Ads drops any repeat of the same enquiry.
+function trackEnquiryConversion(enquiryId: string) {
+  if (!adsConversion || typeof window.gtag !== "function") return;
+  window.gtag("event", "conversion", {
+    send_to: adsConversion,
+    transaction_id: enquiryId,
+  });
+}
+
 type FormState = {
   company: string;
   companyNumber: string;
@@ -354,8 +373,9 @@ export function BusinessReviewForm() {
     setBusy("submit");
     try {
       const response = await fetch("/api/enquiries", { method: "POST", body: data });
-      const payload = (await response.json().catch(() => ({}))) as { error?: string };
+      const payload = (await response.json().catch(() => ({}))) as { error?: string; enquiryId?: string };
       if (!response.ok) throw new Error(payload.error || "We couldn’t send your request. Please try again.");
+      if (payload.enquiryId) trackEnquiryConversion(payload.enquiryId);
       moved.current = true;
       setDone(true);
     } catch (e) {
