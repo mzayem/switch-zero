@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
 import { Geist_Mono, Manrope, Outfit } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import { CookieBanner, SiteHeader } from "./interactive";
 import { Footer } from "./site-chrome";
 import { companyDetails } from "./site-data";
+
+const GOOGLE_ADS_ID = "AW-18470249647";
 
 const manrope = Manrope({
   variable: "--font-manrope",
@@ -73,6 +76,39 @@ export default function RootLayout({
         {children}
         <Footer />
         <CookieBanner />
+        <Script id="gtag-init" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('consent', 'default', {
+              ad_storage: 'denied',
+              ad_user_data: 'denied',
+              ad_personalization: 'denied',
+              analytics_storage: 'denied'
+            });
+            function applyConsent(c) {
+              gtag('consent', 'update', {
+                ad_storage: c.marketing ? 'granted' : 'denied',
+                ad_user_data: c.marketing ? 'granted' : 'denied',
+                ad_personalization: c.marketing ? 'granted' : 'denied',
+                analytics_storage: c.analytics ? 'granted' : 'denied'
+              });
+            }
+            try {
+              var saved = localStorage.getItem('switchzero-cookie-consent');
+              if (saved) applyConsent(JSON.parse(saved));
+            } catch (e) {}
+            window.addEventListener('switchzero:consent-updated', function (e) {
+              applyConsent(e.detail);
+            });
+            gtag('js', new Date());
+            gtag('config', '${GOOGLE_ADS_ID}');
+          `}
+        </Script>
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=${GOOGLE_ADS_ID}`}
+          strategy="afterInteractive"
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
