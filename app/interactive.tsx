@@ -55,7 +55,7 @@ export function SiteHeader() {
             <span aria-hidden="true">·</span>
             <a href={companyDetails.phoneHref}>{companyDetails.phone}</a>
           </div>
-          <Link href="/contact">Book a free energy review</Link>
+          <Link href="/book-energy-review">Book a free energy review</Link>
         </div>
       </div>
       <div className="shell nav-wrap">
@@ -320,19 +320,9 @@ export function SavingsCalculator() {
 
 type EnquiryStatus = "idle" | "sending" | "success" | "error";
 
-export function EnquiryForm({ compact = false }: { compact?: boolean }) {
+export function EnquiryForm() {
   const [status, setStatus] = useState<EnquiryStatus>("idle");
   const [message, setMessage] = useState("");
-  const [postcode, setPostcode] = useState("");
-
-  useEffect(() => {
-    const postcodeParam = new URLSearchParams(window.location.search).get(
-      "postcode",
-    );
-    if (!postcodeParam) return;
-    const timer = window.setTimeout(() => setPostcode(postcodeParam), 0);
-    return () => window.clearTimeout(timer);
-  }, []);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -342,6 +332,7 @@ export function EnquiryForm({ compact = false }: { compact?: boolean }) {
     ["utm_source", "utm_medium", "utm_campaign"].forEach((key) =>
       data.set(key, query.get(key) ?? ""),
     );
+    data.set("service", "General enquiry");
     data.set("initialInterest", query.get("service") ?? "");
     setStatus("sending");
     setMessage("");
@@ -356,26 +347,25 @@ export function EnquiryForm({ compact = false }: { compact?: boolean }) {
         error?: string;
       };
       if (!response.ok)
-        throw new Error(payload.error || "We could not send the enquiry.");
+        throw new Error(payload.error || "We could not send your message.");
       setStatus("success");
       setMessage(
-        payload.message || "Thank you. Your enquiry has been received.",
+        payload.message || "Thank you. Your message has been received.",
       );
       form.reset();
-      setPostcode("");
     } catch (error) {
       setStatus("error");
       setMessage(
         error instanceof Error
           ? error.message
-          : "We could not send the enquiry. Please try again.",
+          : "We could not send your message. Please try again.",
       );
     }
   }
 
   return (
     <form
-      className={compact ? "enquiry-form compact" : "enquiry-form"}
+      className="enquiry-form"
       onSubmit={submit}
       encType="multipart/form-data"
     >
@@ -387,101 +377,39 @@ export function EnquiryForm({ compact = false }: { compact?: boolean }) {
       </div>
       <div className="form-grid two">
         <label>
-          Full name
+          Name
           <input name="fullName" autoComplete="name" required />
         </label>
         <label>
-          Company name
-          <input name="company" autoComplete="organization" required />
+          Company name (optional)
+          <input name="company" autoComplete="organization" />
         </label>
-        {!compact && (
-          <label>
-            Job title
-            <input name="jobTitle" autoComplete="organization-title" />
-          </label>
-        )}
         <label>
-          Work email
+          Email
           <input name="email" type="email" autoComplete="email" required />
         </label>
         <label>
-          Telephone
+          Phone (optional)
           <input name="telephone" type="tel" autoComplete="tel" />
         </label>
-        {!compact && (
-          <label>
-            Business postcode
-            <input
-              name="postcode"
-              autoComplete="postal-code"
-              value={postcode}
-              onChange={(event) => setPostcode(event.currentTarget.value)}
-            />
-          </label>
-        )}
-        {!compact && (
-          <label>
-            Number of sites
-            <input name="siteCount" type="number" min="1" defaultValue="1" />
-          </label>
-        )}
-        <label>
-          Enquiry relates to
-          <select name="service" defaultValue="Tariff switching" required>
-            <option>Tariff switching</option>
-            <option>Electricity</option>
-            <option>Gas</option>
-            <option>Solar PV</option>
-            <option>Battery storage</option>
-            <option>Monitoring</option>
-            <option>Finance</option>
-            <option>Power Purchase Agreement</option>
-            <option>General enquiry</option>
-          </select>
-        </label>
-        {!compact && (
-          <label>
-            Electricity, gas or both
-            <select name="fuel" defaultValue="Both">
-              <option>Electricity</option>
-              <option>Gas</option>
-              <option>Both</option>
-              <option>Not sure</option>
-            </select>
-          </label>
-        )}
-        {!compact && (
-          <label>
-            Contract end date
-            <input name="contractEnd" type="date" />
-          </label>
-        )}
-        {!compact && (
-          <label>
-            Estimated annual spend
-            <input name="annualSpend" inputMode="decimal" placeholder="£" />
-          </label>
-        )}
       </div>
       <label>
         Message
         <textarea
           name="message"
-          rows={compact ? 3 : 5}
-          placeholder="Tell us what you would like reviewed."
+          rows={5}
+          placeholder="How can we help?"
           required
         />
       </label>
-      {!compact && (
-        <label className="file-field">
-          Recent utility bill <span>PDF, JPG or PNG · maximum 3 MB</span>
-          <input
-            name="bill"
-            type="file"
-            accept="application/pdf,image/jpeg,image/png"
-          />
-        </label>
-      )}
+      <label className="file-field">
+        Attachment (optional) <span>PDF, JPG or PNG · maximum 3 MB</span>
+        <input
+          name="bill"
+          type="file"
+          accept="application/pdf,image/jpeg,image/png"
+        />
+      </label>
       <label className="consent">
         <input name="consent" type="checkbox" value="yes" required />
         <span>
@@ -494,7 +422,7 @@ export function EnquiryForm({ compact = false }: { compact?: boolean }) {
         type="submit"
         disabled={status === "sending"}
       >
-        {status === "sending" ? "Sending…" : "Send my enquiry"}
+        {status === "sending" ? "Sending…" : "Send message"}
       </button>
       <p className={`form-status ${status}`} aria-live="polite">
         {message}

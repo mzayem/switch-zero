@@ -62,7 +62,7 @@ export default function Home() {
               <Link className="button button-primary" href="/contact">
                 Get in touch
               </Link>
-              <Link className="button button-ghost" href="/contact?review=free">
+              <Link className="button button-ghost" href="/book-energy-review">
                 Book a free energy review
               </Link>
             </div>
@@ -141,7 +141,7 @@ export default function Home() {
             </div>
           </div>
           <div className="supplier-action">
-            <Link className="button button-primary" href="/contact?review=free">
+            <Link className="button button-primary" href="/book-energy-review">
               Compare my options
             </Link>
             <p>

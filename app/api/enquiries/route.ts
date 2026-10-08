@@ -37,7 +37,6 @@ export async function POST(request: Request) {
 
     if (
       !fullName ||
-      !company ||
       !email ||
       !service ||
       !message ||
@@ -132,7 +131,7 @@ export async function POST(request: Request) {
     await sendGraphMail({
       to: { address: toAddress },
       replyTo: { address: email, name: fullName },
-      subject: `New enquiry: ${service} — ${company}`,
+      subject: `New enquiry: ${service} — ${company || fullName}`,
       html,
       attachments,
     });

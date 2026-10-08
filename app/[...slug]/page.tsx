@@ -239,7 +239,7 @@ function InnerHero({
           <Link className="button button-primary" href="/contact">
             Get in touch
           </Link>
-          <Link className="button button-ghost" href="/contact?review=free">
+          <Link className="button button-ghost" href="/book-energy-review">
             Book a free energy review
           </Link>
         </div>

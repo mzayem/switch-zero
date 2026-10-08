@@ -3,7 +3,7 @@ import { industries, insightArticles, services } from "./site-data";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const base = "https://switchzero.co.uk";
-  const fixed = ["", "about", "how-we-work", "industries", "insights", "contact", "faq", "case-studies", "resources", "complaints-procedure", "privacy", "cookies", "terms", "accessibility"];
+  const fixed = ["", "about", "how-we-work", "industries", "insights", "contact", "book-energy-review", "faq", "case-studies", "resources", "complaints-procedure", "privacy", "cookies", "terms", "accessibility"];
   const paths = [
     ...fixed,
     ...services.map((service) => service.slug),
