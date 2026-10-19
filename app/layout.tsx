@@ -5,6 +5,7 @@ import { GoogleTag } from "@/components/analytics/google-tag";
 import { JsonLd } from "@/components/seo/json-ld";
 import { organizationJsonLd, siteName, siteUrl } from "@/lib/seo";
 import { cn } from "@/lib/utils";
+import NextTopLoader from "nextjs-toploader";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -52,6 +53,7 @@ export default function RootLayout({
       <body
         className={`${manrope.variable} ${outfit.variable} ${geistMono.variable} antialiased`}
       >
+        <NextTopLoader color="#26F2ED" showSpinner={false} />
         {children}
         <GoogleTag />
         <JsonLd data={organizationJsonLd()} />
