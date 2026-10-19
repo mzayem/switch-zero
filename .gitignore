@@ -35,8 +35,8 @@ yarn-error.log*
 
 # typescript
 next-env.d.ts
-/dist/
+*.tsbuildinfo
+
+# leftover local caches from the old vinext setup (safe to delete)
 /.wrangler/
 /.sites-runtime/
-/outputs/
-/work/

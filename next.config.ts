@@ -1,7 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  experimental: {
+    // Enquiry forms can attach a bill of up to 3 MB.
+    serverActions: { bodySizeLimit: "4mb" },
+  },
 };
 
 export default nextConfig;

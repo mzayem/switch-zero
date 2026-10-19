@@ -1,19 +1,47 @@
 import type { MetadataRoute } from "next";
-import { industries, insightArticles, services } from "./site-data";
+import { industries } from "@/lib/content/industries";
+import { insightArticles } from "@/lib/content/insights";
+import { services } from "@/lib/content/services";
+import { siteUrl } from "@/lib/seo";
+
+const pages = [
+  "",
+  "book-energy-review",
+  "contact",
+  "about",
+  "how-we-work",
+  "industries",
+  "insights",
+  "case-studies",
+  "resources",
+  "faq",
+  "complaints-procedure",
+  "privacy",
+  "cookies",
+  "terms",
+  "accessibility",
+];
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const base = "https://switchzero.co.uk";
-  const fixed = ["", "about", "how-we-work", "industries", "insights", "contact", "book-energy-review", "faq", "case-studies", "resources", "complaints-procedure", "privacy", "cookies", "terms", "accessibility"];
-  const paths = [
-    ...fixed,
-    ...services.map((service) => service.slug),
-    ...industries.map((industry) => `industries/${industry.slug}`),
-    ...insightArticles.map((article) => `insights/${article.slug}`),
-  ];
-  return paths.map((path) => ({
-    url: `${base}/${path}`,
-    lastModified: new Date("2026-08-05"),
+  const entry = (
+    path: string,
+    priority: number,
+    lastModified?: Date,
+  ): MetadataRoute.Sitemap[number] => ({
+    url: path ? `${siteUrl}/${path}` : siteUrl,
+    ...(lastModified ? { lastModified } : {}),
     changeFrequency: path.startsWith("insights") ? "weekly" : "monthly",
-    priority: path === "" ? 1 : path === "commercial-tariff-switching" ? 0.9 : 0.7,
-  }));
+    priority,
+  });
+
+  return [
+    ...pages.map((path) =>
+      entry(path, path === "" ? 1 : path === "book-energy-review" ? 0.9 : 0.6),
+    ),
+    ...services.map((service) => entry(service.slug, 0.8)),
+    ...industries.map((industry) => entry(`industries/${industry.slug}`, 0.7)),
+    ...insightArticles.map((article) =>
+      entry(`insights/${article.slug}`, 0.6, new Date(article.date)),
+    ),
+  ];
 }
