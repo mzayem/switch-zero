@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { BrandLogo } from "@/components/brand/brand-logo";
 import { SavingsCalculator } from "@/components/calculator/savings-calculator";
-import { CostPathwayChart } from "@/components/home/cost-pathway-chart";
+import { LazyCostPathwayChart } from "@/components/home/lazy-cost-pathway-chart";
 import { HomeHero } from "@/components/home/home-hero";
 import { FinalCta } from "@/components/layout/final-cta";
 import { FaqList } from "@/components/sections/faq-list";
@@ -143,7 +143,7 @@ export default function Home() {
               alt="Commercial energy review meeting"
               width={1536}
               height={1024}
-              unoptimized
+              sizes="(max-width: 820px) 100vw, 560px"
             />
             <div className="media-note">
               <b>One joined-up view</b>
@@ -250,22 +250,24 @@ export default function Home() {
             {services.slice(0, 7).map((service, index) => (
               <CarouselItem className="service-slide" key={service.slug}>
                 <article className="image-service-card">
-                  <div
-                    className={`service-visual visual-${index + 1}`}
-                    style={
-                      service.image
-                        ? {
-                            backgroundImage: `linear-gradient(180deg, transparent, rgba(0,51,54,.8)), url(${service.image})`,
-                          }
-                        : undefined
-                    }
-                  >
+                  <div className={`service-visual visual-${index + 1}`}>
+                    {service.image && (
+                      <Image
+                        src={service.image}
+                        alt=""
+                        fill
+                        sizes="(max-width: 560px) 84vw, 360px"
+                      />
+                    )}
                     <span>{String(index + 1).padStart(2, "0")}</span>
                   </div>
                   <div>
                     <h3>{service.title}</h3>
                     <p>{service.summary}</p>
-                    <Link href={`/${service.slug}`}>Learn more</Link>
+                    <Link href={`/${service.slug}`}>
+                      Learn more
+                      <span className="sr-only"> about {service.title}</span>
+                    </Link>
                   </div>
                 </article>
               </CarouselItem>
@@ -431,7 +433,7 @@ export default function Home() {
               See what could work for my organisation
             </Button>
           </div>
-          <CostPathwayChart />
+          <LazyCostPathwayChart />
         </div>
       </section>
 
@@ -502,7 +504,10 @@ export default function Home() {
                   </Link>
                 </h3>
                 <p>{article.excerpt}</p>
-                <Link href={`/insights/${article.slug}`}>Read article</Link>
+                <Link href={`/insights/${article.slug}`}>
+                  Read article
+                  <span className="sr-only">: {article.title}</span>
+                </Link>
               </div>
             </article>
           ))}

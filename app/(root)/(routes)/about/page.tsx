@@ -29,7 +29,7 @@ export default function AboutPage() {
               alt="Energy adviser reviewing commercial equipment with a client"
               width={1536}
               height={1024}
-              unoptimized
+              sizes="(max-width: 820px) 100vw, 560px"
             />
             <div className="media-note">
               <b>Commercially focused</b>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ChevronDownIcon, MenuIcon, XIcon } from "lucide-react";
 import { BrandLogo } from "@/components/brand/brand-logo";
@@ -19,6 +19,7 @@ import {
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 import { companyDetails } from "@/lib/content/company";
+import { cn } from "@/lib/utils";
 import { industryNav, serviceNav } from "@/lib/content/navigation";
 
 const topLinks = [
@@ -141,13 +142,40 @@ function MobileNav({ open, close }: { open: boolean; close: () => void }) {
       <Link className="mobile-contact" href="/contact" onClick={close}>
         Get in touch
       </Link>
+      <div className="mobile-socials">
+        <span>Follow us</span>
+        <SocialLinks />
+      </div>
     </nav>
+  );
+}
+
+// Shown in the header on desktop and inside the menu on smaller screens.
+function SocialLinks({ className }: { className?: string }) {
+  return (
+    <div
+      className={cn("social-links", className)}
+      aria-label="SwitchtoZero social profiles"
+    >
+      {(["Instagram", "LinkedIn", "Facebook"] as const).map((name) => (
+        <span
+          className="social-link"
+          role="img"
+          aria-label={`${name} profile link coming soon`}
+          title={`${name} profile link coming soon`}
+          key={name}
+        >
+          <SocialIcon name={name} />
+        </span>
+      ))}
+    </div>
   );
 }
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const [stuck, setStuck] = useState(false);
+  const headerRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const close = () => setOpen(false);
@@ -157,12 +185,19 @@ export function SiteHeader() {
 
   // Compact glass header once the page has scrolled. The gap between the on
   // and off points stops it flickering when the header height changes.
+  // The floating island has a transparent surround, so it may only show once
+  // the header's own slot at the top of the page has scrolled out of view;
+  // otherwise the empty slot flashes white behind it. The island turns on a
+  // little past that point and off just before the slot returns.
   useEffect(() => {
+    const header = headerRef.current;
+    if (!header) return;
+    const slot = header.offsetHeight;
     let frame = 0;
     const update = () => {
       frame = 0;
       setStuck((current) =>
-        current ? window.scrollY > 24 : window.scrollY > 96,
+        current ? window.scrollY > slot : window.scrollY > slot + 48,
       );
     };
     const onScroll = () => {
@@ -177,7 +212,11 @@ export function SiteHeader() {
   }, []);
 
   return (
-    <header className="site-header" data-stuck={stuck || undefined}>
+    <header
+      ref={headerRef}
+      className="site-header"
+      data-stuck={stuck || undefined}
+    >
       <div className="announcement">
         <div className="shell announcement-inner">
           <div
@@ -214,22 +253,7 @@ export function SiteHeader() {
         <DesktopNav />
         <MobileNav open={open} close={() => setOpen(false)} />
 
-        <div
-          className="header-socials"
-          aria-label="SwitchtoZero social profiles"
-        >
-          {(["Instagram", "LinkedIn", "Facebook"] as const).map((name) => (
-            <span
-              className="social-link"
-              role="img"
-              aria-label={`${name} profile link coming soon`}
-              title={`${name} profile link coming soon`}
-              key={name}
-            >
-              <SocialIcon name={name} />
-            </span>
-          ))}
-        </div>
+        <SocialLinks className="header-socials" />
 
         <Link className="header-cta" href="/contact">
           Get in touch

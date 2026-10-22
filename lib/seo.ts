@@ -5,7 +5,13 @@ import type { Faq, InsightArticle } from "@/lib/content/types";
 // The live site serves from www; every canonical URL must match it.
 export const siteUrl = "https://www.switchzero.co.uk";
 export const siteName = "SwitchtoZero";
-const defaultImage = "/assets/switchzero-logo-teal.png";
+export const defaultDescription =
+  "Commercial energy procurement for UK organisations, with support for efficiency, solar PV, battery storage, monitoring and finance.";
+const logoImage = "/assets/switchzero-logo-teal.png";
+// 1200x630 branded card for link previews on pages without their own photo.
+const defaultImage = "/assets/og-default.png";
+// Search results show roughly 60 characters of a title.
+const maxTitleLength = 60;
 
 export function absoluteUrl(path: string) {
   return new URL(path, siteUrl).toString();
@@ -15,6 +21,8 @@ type PageMetadataInput = {
   title: string;
   description: string;
   path: string;
+  // Title for link previews, when it differs from the search title.
+  socialTitle?: string;
   image?: string;
   type?: "website" | "article";
   publishedTime?: string;
@@ -25,29 +33,37 @@ export function pageMetadata({
   title,
   description,
   path,
+  socialTitle = title,
   image = defaultImage,
   type = "website",
   publishedTime,
 }: PageMetadataInput): Metadata {
+  const branded = `${title} | ${siteName}`;
+  const ogImage = {
+    url: image,
+    alt: socialTitle,
+    ...(image === defaultImage ? { width: 1200, height: 630 } : {}),
+  };
   return {
-    title,
+    // Drop the brand suffix rather than let search results truncate the title.
+    title: branded.length > maxTitleLength ? { absolute: title } : title,
     description,
     alternates: { canonical: path },
     openGraph: {
       type,
       locale: "en_GB",
       siteName,
-      title,
+      title: socialTitle,
       description,
       url: path,
-      images: [{ url: image }],
+      images: [ogImage],
       ...(publishedTime ? { publishedTime } : {}),
     },
     twitter: {
       card: "summary_large_image",
-      title,
+      title: socialTitle,
       description,
-      images: [image],
+      images: [ogImage],
     },
   };
 }
@@ -67,7 +83,7 @@ export function organizationJsonLd() {
     name: siteName,
     legalName: companyDetails.name,
     url: siteUrl,
-    logo: absoluteUrl(defaultImage),
+    logo: absoluteUrl(logoImage),
     image: absoluteUrl(defaultImage),
     email: companyDetails.email,
     telephone: "+44 1633 846 927",
@@ -81,6 +97,18 @@ export function organizationJsonLd() {
     areaServed: { "@type": "Country", name: "United Kingdom" },
     description:
       "Commercial energy procurement and energy strategy support for UK organisations.",
+  };
+}
+
+export function websiteJsonLd() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": `${siteUrl}/#website`,
+    name: siteName,
+    url: siteUrl,
+    inLanguage: "en-GB",
+    publisher: { "@id": `${siteUrl}/#organization` },
   };
 }
 

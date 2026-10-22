@@ -1,6 +1,14 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { SiteShell } from "@/components/layout/site-shell";
 import { Button } from "@/components/ui/button";
+
+export const metadata: Metadata = {
+  title: "Page not found",
+  description:
+    "This page could not be found. Head back to the SwitchZero homepage or get in touch about your business energy.",
+  robots: { index: false, follow: true },
+};
 
 // Unmatched URLs render outside the (root) layout, so add the shell here.
 export default function NotFound() {

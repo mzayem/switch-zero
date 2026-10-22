@@ -35,9 +35,11 @@ export function GoogleTag() {
           gtag('config', '${googleAdsId}');
         `}
       </Script>
+      {/* The library is large; load it once the page is idle. Calls made
+          before then wait in dataLayer, so no conversion is lost. */}
       <Script
         src={`https://www.googletagmanager.com/gtag/js?id=${googleAdsId}`}
-        strategy="afterInteractive"
+        strategy="lazyOnload"
       />
     </>
   );

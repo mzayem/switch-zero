@@ -7,6 +7,7 @@ export const insightArticles: InsightArticle[] = [
     category: "Procurement",
     title:
       "The commercial renewal window: what to check before requesting prices",
+    seoTitle: "Business Energy Renewal Checklist",
     excerpt:
       "A clear checklist for contracts, meters, usage and internal approval before the market conversation begins.",
     date: "5 August 2026",
@@ -22,6 +23,7 @@ export const insightArticles: InsightArticle[] = [
     image: "/assets/insight-electricity-price.webp",
     category: "Business electricity",
     title: "Why the unit rate is not the whole commercial electricity price",
+    seoTitle: "Unit Rate vs the Real Business Electricity Cost",
     excerpt:
       "Standing charges, capacity, contract terms and pass-through costs can change the real annual comparison.",
     date: "5 August 2026",
@@ -37,6 +39,7 @@ export const insightArticles: InsightArticle[] = [
     image: "/assets/insight-solar-procurement.webp",
     category: "Solar PV",
     title: "Where commercial solar fits after the supply contract review",
+    seoTitle: "Commercial Solar After a Contract Review",
     excerpt:
       "Procurement and on-site generation work better when the load, tariff and contract timetable are considered together.",
     date: "5 August 2026",

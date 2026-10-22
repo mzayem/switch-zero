@@ -1,13 +1,17 @@
-import type { Metadata } from "next";
-import { Geist_Mono, Manrope, Outfit, Inter } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Geist_Mono, Manrope, Outfit } from "next/font/google";
 import "./globals.css";
 import { GoogleTag } from "@/components/analytics/google-tag";
 import { JsonLd } from "@/components/seo/json-ld";
-import { organizationJsonLd, siteName, siteUrl } from "@/lib/seo";
+import {
+  defaultDescription,
+  organizationJsonLd,
+  siteName,
+  siteUrl,
+  websiteJsonLd,
+} from "@/lib/seo";
 import { cn } from "@/lib/utils";
 import NextTopLoader from "nextjs-toploader";
-
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 const manrope = Manrope({
   variable: "--font-manrope",
@@ -23,24 +27,55 @@ const outfit = Outfit({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  // Only used for small numerals well below the fold.
+  preload: false,
 });
 
-// Site-wide defaults. Each page sets its own title, description and canonical
-// URL with pageMetadata() from lib/seo.ts.
+// Site-wide defaults. Each page sets its own title, description, canonical
+// URL and social image with pageMetadata() from lib/seo.ts.
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
     default: `${siteName} | Helping Businesses Buy Energy Better`,
     template: `%s | ${siteName}`,
   },
-  description:
-    "Commercial energy procurement for UK organisations, with support for efficiency, solar PV, battery storage, monitoring and finance.",
+  description: defaultDescription,
   applicationName: siteName,
-  robots: { index: true, follow: true },
+  authors: [{ name: siteName, url: siteUrl }],
+  creator: siteName,
+  publisher: siteName,
+  category: "business",
+  keywords: [
+    "business energy",
+    "commercial energy procurement",
+    "business electricity",
+    "business gas",
+    "commercial tariff switching",
+    "energy broker UK",
+    "commercial solar PV",
+    "battery storage",
+    "energy management",
+  ],
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
+  formatDetection: { telephone: false, email: false, address: false },
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#003336",
 };
 
 export default function RootLayout({
@@ -49,14 +84,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en-GB" className={cn("font-sans", inter.variable)}>
-      <body
-        className={`${manrope.variable} ${outfit.variable} ${geistMono.variable} antialiased`}
-      >
+    <html
+      lang="en-GB"
+      className={cn(
+        "font-sans",
+        manrope.variable,
+        outfit.variable,
+        geistMono.variable,
+      )}
+    >
+      <body className="antialiased">
         <NextTopLoader color="#26F2ED" showSpinner={false} />
         {children}
         <GoogleTag />
         <JsonLd data={organizationJsonLd()} />
+        <JsonLd data={websiteJsonLd()} />
       </body>
     </html>
   );

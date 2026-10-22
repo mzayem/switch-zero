@@ -60,7 +60,10 @@ export default function InsightsPage() {
                   </Link>
                 </h2>
                 <p>{article.excerpt}</p>
-                <Link href={`/insights/${article.slug}`}>Read article</Link>
+                <Link href={`/insights/${article.slug}`}>
+                  Read article
+                  <span className="sr-only">: {article.title}</span>
+                </Link>
               </div>
             </article>
           ))}

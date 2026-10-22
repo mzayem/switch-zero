@@ -22,7 +22,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const article = insightArticles.find((item) => item.slug === slug);
   if (!article) return {};
   return pageMetadata({
-    title: article.title,
+    title: article.seoTitle ?? article.title,
+    socialTitle: article.title,
     description: article.excerpt,
     path: `/insights/${article.slug}`,
     image: article.image,

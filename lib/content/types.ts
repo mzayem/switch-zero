@@ -63,6 +63,9 @@ export type InsightArticle = {
   image: string;
   category: string;
   title: string;
+  // Shorter title for search results and the browser tab, when the headline
+  // would be cut off there (aim for 45 characters or fewer).
+  seoTitle?: string;
   excerpt: string;
   date: string;
   minutes: number;

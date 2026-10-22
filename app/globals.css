@@ -278,8 +278,9 @@
 }
 .nav-panel-title {
   margin: 0 0 16px;
-  color: var(--green);
-  font-size: 10px;
+  color: #00726f;
+  font-size: 11px;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.16em;
 }
@@ -308,10 +309,13 @@
 .mobile-nav {
   display: none;
 }
-.header-socials {
+.social-links {
   display: flex;
   align-items: center;
   gap: 6px;
+}
+.mobile-socials {
+  display: none;
 }
 .social-link {
   width: 30px;
@@ -686,16 +690,6 @@ textarea:focus {
   background: var(--navy);
   box-shadow: var(--shadow);
 }
-.media-note::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 7px;
-  height: 100%;
-  background: var(--green);
-  border-radius: 18px 0 0 18px;
-}
 .media-note b,
 .media-note span {
   display: block;
@@ -855,9 +849,13 @@ textarea:focus {
   position: relative;
   overflow: hidden;
 }
+.service-visual img {
+  object-fit: cover;
+}
 .service-visual::before {
   content: "";
   position: absolute;
+  z-index: 1;
   inset: 0;
   background: linear-gradient(
     135deg,
@@ -907,7 +905,7 @@ textarea:focus {
   display: flex;
   align-items: center;
   gap: 15px;
-  color: #74808c;
+  color: #5d6b78;
   font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 0.12em;
@@ -1296,7 +1294,7 @@ textarea:focus {
 }
 .disclaimer {
   margin: 15px 0 0;
-  color: #74808c;
+  color: #5d6b78;
   font-size: 9px;
   line-height: 1.5;
 }
@@ -1959,7 +1957,7 @@ textarea:focus {
   border-bottom: 1px solid #cdd7dd;
 }
 .number-line span {
-  color: var(--green);
+  color: #00726f;
   font-family: var(--font-geist-mono);
   font-size: 10px;
 }
@@ -2777,8 +2775,40 @@ textarea:focus {
 }
 
 @media (max-width: 1100px) {
+  /* Socials move into the menu; the menu button sits at the far right. */
+  .header-socials {
+    display: none;
+  }
   .header-cta {
+    order: 9;
     margin-left: auto;
+  }
+  .menu-button {
+    order: 10;
+  }
+  .mobile-socials {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+  }
+  .mobile-socials > span {
+    color: #b3c0cc;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .mobile-socials .social-link {
+    width: 38px;
+    height: 38px;
+  }
+  .mobile-socials .social-link svg {
+    width: 17px;
+    height: 17px;
   }
   .menu-button {
     width: 44px;
@@ -2947,6 +2977,9 @@ textarea:focus {
   }
   .header-cta {
     display: none;
+  }
+  .menu-button {
+    margin-left: auto;
   }
   .mobile-nav {
     top: 70px;
@@ -3452,7 +3485,7 @@ textarea:focus {
   align-items: center;
   min-height: 21px;
   margin: 18px 0;
-  color: #73878c;
+  color: #5a6d72;
   font-size: 12px;
 }
 .review-card .form-nav button {
@@ -3530,12 +3563,12 @@ textarea:focus {
 }
 .review-card .primary-button,
 .company-dialog .primary-button {
-  background: var(--green);
+  background: #00807e;
   color: white;
 }
 .review-card .primary-button:hover,
 .company-dialog .primary-button:hover {
-  background: #008f8d;
+  background: #006b69;
 }
 .review-card .secondary-button,
 .company-dialog .secondary-button {
@@ -4146,14 +4179,14 @@ textarea:focus {
   margin-top: 18px;
   border: 0;
   border-radius: 10px;
-  background: var(--green);
+  background: #00807e;
   color: white;
   font-size: 15px;
   font-weight: 800;
   cursor: pointer;
 }
 .company-details .primary-button:hover {
-  background: #008f8d;
+  background: #006b69;
 }
 @media (max-width: 640px) {
   .review-card {
@@ -4518,7 +4551,7 @@ textarea:focus {
 
 @theme inline {
   --font-heading: var(--font-sans);
-  --font-sans: var(--font-sans);
+  --font-sans: var(--font-manrope), Arial, sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -4644,9 +4677,6 @@ textarea:focus {
   --announcement-h: 35px;
   top: calc(var(--announcement-h) * -1);
   background: var(--navy);
-  transition:
-    background-color 0.3s ease,
-    border-color 0.3s ease;
 }
 .site-header .nav-wrap {
   border: 1px solid transparent;
@@ -4664,7 +4694,9 @@ textarea:focus {
   background: transparent;
 }
 .site-header[data-stuck] .nav-wrap {
+  /* 62px island + 16px margin keeps the 78px slot, so nothing below moves. */
   height: 62px;
+  margin-bottom: 16px;
   padding: 0 10px 0 22px;
   translate: 0 10px;
   border-color: rgba(38, 242, 237, 0.22);
@@ -4688,12 +4720,21 @@ textarea:focus {
   border: 1px solid rgba(38, 242, 237, 0.22);
   border-radius: 22px;
 }
+@media (max-width: 820px) {
+  .site-header[data-stuck] .nav-wrap {
+    /* 58px island + 12px margin = the 70px slot at this size. */
+    height: 58px;
+    margin-bottom: 12px;
+    padding: 0 8px 0 16px;
+  }
+}
 @media (max-width: 760px) {
   .site-header {
     --announcement-h: 39px;
   }
   .site-header[data-stuck] .nav-wrap {
     height: 58px;
+    margin-bottom: 12px;
     padding: 0 8px 0 16px;
   }
 }
@@ -4724,7 +4765,9 @@ textarea:focus {
 }
 .supplier-more,
 .media-note {
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.16);
+  border-style: solid;
+  border-width: 1px;
   background: linear-gradient(
     145deg,
     rgba(11, 93, 96, 0.94),
@@ -5221,4 +5264,28 @@ textarea:focus {
     [type="range"]
   ) {
   cursor: text !important;
+}
+
+/* Service card photos: darken toward the copy below. */
+.service-visual:has(img)::before {
+  background:
+    linear-gradient(180deg, transparent, rgba(0, 51, 54, 0.8)),
+    linear-gradient(135deg, rgba(0, 51, 54, 0.04), rgba(0, 51, 54, 0.3));
+}
+
+/* Holds the cost chart's exact height until it loads (see
+   lazy-cost-pathway-chart.tsx): 6 rows x (bar + 14px gap) + 14px. */
+.pathway-chart-placeholder {
+  height: 266px;
+}
+@media (max-width: 560px) {
+  .pathway-chart-placeholder {
+    height: 230px;
+  }
+}
+/* The teal accent is the card's own left border, so it follows the rounded
+   corners instead of sitting inside them as a separate strip. Declared after
+   the glass rule, which resets the border. */
+.media-note {
+  border-left: 6px solid var(--green);
 }
