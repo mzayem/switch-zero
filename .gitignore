@@ -37,6 +37,11 @@ yarn-error.log*
 next-env.d.ts
 *.tsbuildinfo
 
+# local AI agent config and installed skills
+/.claude/
+/.agents/
+/skills-lock.json
+
 # leftover local caches from the old vinext setup (safe to delete)
 /.wrangler/
 /.sites-runtime/

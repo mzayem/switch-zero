@@ -53,56 +53,56 @@
 }
 
 @layer base {
-* {
-  box-sizing: border-box;
-}
-html {
-  scroll-behavior: smooth;
-  scroll-padding-top: 120px;
-}
-body {
-  margin: 0;
-  color: var(--ink);
-  background: var(--paper);
-  font-family: var(--font-manrope), Arial, sans-serif;
-  font-size: 16px;
-  line-height: 1.55;
-}
-body,
-input,
-select,
-textarea,
-button {
-  font-family: var(--font-manrope), Arial, sans-serif;
-}
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-family: var(--font-display), var(--font-manrope), Arial, sans-serif;
-  font-weight: 800;
-}
-img {
-  display: block;
-  max-width: 100%;
-}
-a {
-  color: inherit;
-  text-decoration: none;
-}
-button,
-input,
-select,
-textarea {
-  font: inherit;
-}
-button,
-summary,
-a {
-  -webkit-tap-highlight-color: transparent;
-}
+  * {
+    box-sizing: border-box;
+  }
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 120px;
+  }
+  body {
+    margin: 0;
+    color: var(--ink);
+    background: var(--paper);
+    font-family: var(--font-manrope), Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.55;
+  }
+  body,
+  input,
+  select,
+  textarea,
+  button {
+    font-family: var(--font-manrope), Arial, sans-serif;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-display), var(--font-manrope), Arial, sans-serif;
+    font-weight: 800;
+  }
+  img {
+    display: block;
+    max-width: 100%;
+  }
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+  }
+  button,
+  summary,
+  a {
+    -webkit-tap-highlight-color: transparent;
+  }
 }
 :focus-visible {
   outline: 3px solid #26f2ed;
@@ -812,19 +812,30 @@ textarea:focus {
   color: var(--text-muted);
   line-height: 1.75;
 }
+/* Embla track: aligned to the wide shell, slides peek past the right edge. */
 .service-rail {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: minmax(310px, 360px);
+  display: flex;
   gap: 18px;
-  overflow-x: auto;
   padding: 5px 0 30px;
-  scroll-snap-type: x mandatory;
-  scrollbar-width: thin;
-  scrollbar-color: var(--green) #dce4e8;
+}
+.service-carousel [data-slot="carousel-item"] {
+  flex: 0 0 clamp(290px, 80vw, 360px);
+  padding: 0;
+}
+.service-carousel [data-slot="carousel-content"] {
+  cursor: grab;
+}
+.service-carousel [data-slot="carousel-content"]:active {
+  cursor: grabbing;
+}
+.service-carousel [data-slot="carousel-previous"],
+.service-carousel [data-slot="carousel-next"] {
+  position: static;
+  margin: 0;
+  flex: 0 0 auto;
 }
 .image-service-card {
-  scroll-snap-align: start;
+  height: 100%;
   min-height: 520px;
   border: 1px solid var(--line);
   border-radius: 22px;
@@ -1834,15 +1845,18 @@ textarea:focus {
 .breadcrumbs ol {
   list-style: none;
   display: flex;
+  flex-wrap: wrap;
   gap: 9px;
   padding: 0;
   margin: 0;
   color: #9eb0c0;
   font-size: 10px;
 }
-.breadcrumbs li + li::before {
-  content: "/";
-  margin-right: 9px;
+.breadcrumbs [data-slot="breadcrumb-page"] {
+  color: inherit;
+  font-weight: inherit;
+}
+.breadcrumbs [data-slot="breadcrumb-separator"] {
   color: var(--green-bright);
 }
 .breadcrumbs a:hover {
@@ -2670,6 +2684,7 @@ textarea:focus {
   padding: 24px;
   background: rgba(1, 19, 41, 0.48);
   backdrop-filter: blur(4px);
+  transition: opacity 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .cookie-card {
   width: min(980px, 100%);
@@ -2678,6 +2693,16 @@ textarea:focus {
   border-radius: 22px;
   background: white;
   box-shadow: 0 30px 90px rgba(0, 0, 0, 0.28);
+  /* Shares the layer's curve and duration so card and overlay arrive together. */
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@starting-style {
+  .cookie-layer {
+    opacity: 0;
+  }
+  .cookie-card {
+    transform: translateY(24px);
+  }
 }
 .cookie-card h2 {
   margin: 0;
@@ -2711,12 +2736,37 @@ textarea:focus {
   color: var(--text-muted);
   font-size: 9px;
 }
-.cookie-options [data-slot="checkbox"] {
-  flex: 0 0 18px;
+.cookie-options label {
+  cursor: pointer;
+}
+/* Brand switch: navy track off, bright green on. */
+[data-slot="switch"] {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 22px;
+  padding: 2px;
+  transition: background-color 0.2s ease;
+}
+[data-slot="switch"][data-unchecked] {
+  background: #c7d3d4;
+}
+[data-slot="switch"][data-checked] {
+  background: var(--green);
+}
+[data-slot="switch-thumb"] {
   width: 18px;
   height: 18px;
+  background: white;
+  box-shadow: 0 2px 6px rgba(0, 51, 54, 0.25);
+  transition: translate 0.2s cubic-bezier(0.22, 1, 0.36, 1);
 }
-.cookie-options [data-slot="checkbox"][data-disabled] {
+[data-slot="switch-thumb"][data-checked] {
+  translate: 18px 0;
+}
+[data-slot="switch-thumb"][data-unchecked] {
+  translate: 0 0;
+}
+[data-slot="switch"][data-disabled] {
   cursor: not-allowed;
   opacity: 0.6;
 }
@@ -3154,8 +3204,8 @@ textarea:focus {
   .procurement-grid h2 {
     font-size: 43px;
   }
-  .service-rail {
-    grid-auto-columns: minmax(275px, 84vw);
+  .service-carousel [data-slot="carousel-item"] {
+    flex-basis: min(84vw, 340px);
   }
   .strategy-wheel {
     aspect-ratio: auto;
@@ -3210,7 +3260,7 @@ textarea:focus {
     grid-template-columns: 1fr;
   }
   .feature-grid article {
-    min-height: 260px;
+    min-height: 0;
   }
   .feature-grid article > span {
     margin-bottom: 55px;
@@ -3380,6 +3430,22 @@ textarea:focus {
   background: var(--green);
   transition: width 0.3s ease;
 }
+/* Each step slides in from the side it lives on: forward from the right,
+   back from the left. */
+.review-card[data-direction] .step-content {
+  transition:
+    opacity 0.25s cubic-bezier(0.25, 1, 0.5, 1),
+    transform 0.25s cubic-bezier(0.25, 1, 0.5, 1);
+}
+@starting-style {
+  .review-card[data-direction] .step-content {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+  .review-card[data-direction="back"] .step-content {
+    transform: translateX(-16px);
+  }
+}
 .review-card .form-nav {
   display: flex;
   justify-content: space-between;
@@ -3446,7 +3512,9 @@ textarea:focus {
   padding-left: 40px;
 }
 .review-card .primary-button,
-.review-card .secondary-button {
+.company-dialog .primary-button,
+.review-card .secondary-button,
+.company-dialog .secondary-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -3460,28 +3528,34 @@ textarea:focus {
   white-space: nowrap;
   cursor: pointer;
 }
-.review-card .primary-button {
+.review-card .primary-button,
+.company-dialog .primary-button {
   background: var(--green);
   color: white;
 }
-.review-card .primary-button:hover {
+.review-card .primary-button:hover,
+.company-dialog .primary-button:hover {
   background: #008f8d;
 }
-.review-card .secondary-button {
+.review-card .secondary-button,
+.company-dialog .secondary-button {
   border-color: #d5e9e9;
   background: #eff7f7;
   color: #08767b;
 }
-.review-card button:disabled {
+.review-card button:disabled,
+.company-dialog button:disabled {
   opacity: 0.65;
   cursor: wait;
 }
-.review-card .continue {
+.review-card .continue,
+.company-dialog .continue {
   width: 100%;
   margin-top: 22px;
   font-size: 15px;
 }
-.review-card .text-button {
+.review-card .text-button,
+.company-dialog .text-button {
   display: inline-flex;
   align-items: center;
   gap: 7px;
@@ -3495,7 +3569,8 @@ textarea:focus {
   text-underline-offset: 4px;
   cursor: pointer;
 }
-.review-card .notice {
+.review-card .notice,
+.company-dialog .notice {
   margin: 14px 0 0;
   padding: 11px 13px;
   border-radius: 9px;
@@ -3503,7 +3578,8 @@ textarea:focus {
   color: #52717b;
   font-size: 13px;
 }
-.review-card .scan-status {
+.review-card .scan-status,
+.company-dialog .scan-status {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -3882,10 +3958,20 @@ textarea:focus {
   background: white;
   color: var(--ink);
   box-shadow: var(--shadow);
+  /* Centred by inset + auto margins, so drop the primitive's translate. */
+  translate: none;
+  overflow-y: auto;
+  animation-duration: 0.25s;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
 }
-.company-dialog::backdrop {
+.company-dialog[data-closed] {
+  animation-duration: 0.15s;
+}
+/* Brand overlay for every shadcn dialog. */
+[data-slot="dialog-overlay"] {
   background: rgba(0, 31, 33, 0.62);
-  backdrop-filter: blur(3px);
+  backdrop-filter: blur(6px);
+  animation-duration: 0.25s;
 }
 .company-dialog-inner {
   padding: 22px 24px 26px;
@@ -4073,7 +4159,8 @@ textarea:focus {
   .review-card {
     padding: 22px 18px;
   }
-  .review-card .primary-button {
+  .review-card .primary-button,
+  .company-dialog .primary-button {
     padding: 12px 14px;
   }
   .company-dialog-inner {
@@ -4117,7 +4204,7 @@ textarea:focus {
 .booking-hero .breadcrumbs a:hover {
   color: var(--green);
 }
-.booking-hero .breadcrumbs li + li::before {
+.booking-hero .breadcrumbs [data-slot="breadcrumb-separator"] {
   color: var(--green);
 }
 .booking-intro {
@@ -4542,4 +4629,596 @@ textarea:focus {
   content: "";
   position: absolute;
   inset: -4px 0;
+}
+
+/* ------------------------------------------------------------------ */
+/* Glass and motion                                                    */
+/* ------------------------------------------------------------------ */
+
+/* Header: solid navy bar at the top of the page. The contact bar scrolls
+   away (the header sticks at minus its height); once scrolled, the bar
+   detaches into a floating navy-to-blue glass island. The island is dense
+   enough (88%+) that its white text keeps strong contrast over white and
+   dark sections alike, which a see-through full-width bar could not. */
+.site-header {
+  --announcement-h: 35px;
+  top: calc(var(--announcement-h) * -1);
+  background: var(--navy);
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease;
+}
+.site-header .nav-wrap {
+  border: 1px solid transparent;
+  border-radius: 0;
+  transition:
+    height 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    translate 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    padding 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    border-radius 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+.site-header[data-stuck] {
+  border-bottom-color: transparent;
+  background: transparent;
+}
+.site-header[data-stuck] .nav-wrap {
+  height: 62px;
+  padding: 0 10px 0 22px;
+  translate: 0 10px;
+  border-color: rgba(38, 242, 237, 0.22);
+  border-radius: 999px;
+  background: linear-gradient(
+    120deg,
+    rgba(0, 40, 43, 0.94) 0%,
+    rgba(6, 66, 80, 0.9) 50%,
+    rgba(9, 44, 92, 0.92) 100%
+  );
+  backdrop-filter: blur(18px) saturate(160%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 18px 44px rgba(0, 24, 32, 0.32);
+}
+.site-header[data-stuck] .header-cta {
+  padding: 9px 16px;
+}
+.site-header[data-stuck] .mobile-nav {
+  top: calc(100% + 8px);
+  border: 1px solid rgba(38, 242, 237, 0.22);
+  border-radius: 22px;
+}
+@media (max-width: 760px) {
+  .site-header {
+    --announcement-h: 39px;
+  }
+  .site-header[data-stuck] .nav-wrap {
+    height: 58px;
+    padding: 0 8px 0 16px;
+  }
+}
+
+/* Glass surfaces: gradient fills (never a flat see-through tint), background
+   blur, a light edge and an inner top highlight. */
+.hero-lower {
+  background: linear-gradient(
+    90deg,
+    rgba(0, 40, 43, 0.9),
+    rgba(6, 75, 78, 0.66)
+  );
+  backdrop-filter: blur(18px) saturate(140%);
+}
+/* The review form stays solid white for legibility, never glass. */
+.review-card {
+  background: white;
+}
+.calculator-fields {
+  background: linear-gradient(
+    150deg,
+    rgba(38, 242, 237, 0.16),
+    rgba(6, 75, 78, 0.3) 60%,
+    rgba(0, 40, 43, 0.4)
+  );
+  backdrop-filter: blur(16px) saturate(140%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+.supplier-more,
+.media-note {
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: linear-gradient(
+    145deg,
+    rgba(11, 93, 96, 0.94),
+    rgba(0, 51, 54, 0.86)
+  );
+  backdrop-filter: blur(16px) saturate(150%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    var(--shadow);
+}
+.cookie-layer {
+  backdrop-filter: blur(8px);
+}
+.cookie-card,
+.company-dialog {
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  background: linear-gradient(
+    150deg,
+    rgba(255, 255, 255, 0.98) 0%,
+    rgba(240, 253, 252, 0.96) 60%,
+    rgba(226, 248, 247, 0.95) 100%
+  );
+  backdrop-filter: blur(24px) saturate(160%);
+}
+
+/* Dialogs sit above everything, header and progress bar included. */
+/* Dialogs sit above everything except the cursor, which must stay on top
+   to be usable inside them. */
+.cookie-layer,
+[data-slot="dialog-overlay"],
+[data-slot="dialog-content"] {
+  z-index: 2147483646;
+}
+
+/* Reading progress: scrubbed by page scroll, so linear and no duration. */
+.scroll-progress {
+  display: none;
+}
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .scroll-progress {
+      display: block;
+      position: fixed;
+      z-index: 120;
+      inset: 0 0 auto;
+      height: 3px;
+      background: linear-gradient(90deg, var(--green), var(--green-bright));
+      box-shadow: 0 0 12px rgba(38, 242, 237, 0.6);
+      transform-origin: 0 50%;
+      animation: scroll-progress linear both;
+      animation-timeline: scroll(root block);
+      pointer-events: none;
+    }
+  }
+}
+@keyframes scroll-progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* Scroll-driven depth. Each block only runs where scroll timelines exist;
+   elsewhere everything sits in its final, readable state. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    /* Hero photo drifts slower than the page (about 12%) as it scrolls out. */
+    @media (min-width: 900px) {
+      .home-hero-bg {
+        scale: 1.08;
+        animation: hero-parallax linear both;
+        animation-timeline: view();
+        animation-range: exit 0% exit 100%;
+        will-change: transform;
+      }
+      /* The floating note rises past the photo, so it reads as a layer above. */
+      .media-note {
+        animation: float-layer linear both;
+        animation-timeline: view();
+        animation-range: cover 0% cover 100%;
+      }
+    }
+
+    /* "How we work": each step's line fills in turn as the row scrolls through. */
+    .steps-grid {
+      view-timeline: --steps block;
+    }
+    .steps-grid article > i::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: var(--green-bright);
+      box-shadow: 0 0 10px rgba(38, 242, 237, 0.7);
+      transform-origin: 0 50%;
+      animation: line-fill linear both;
+      animation-timeline: --steps;
+    }
+    .steps-grid article:nth-child(1) > i::after {
+      animation-range: entry 60% cover 40%;
+    }
+    .steps-grid article:nth-child(2) > i::after {
+      animation-range: cover 40% cover 50%;
+    }
+    .steps-grid article:nth-child(3) > i::after {
+      animation-range: cover 50% cover 60%;
+    }
+    .steps-grid article:nth-child(4) > i::after {
+      animation-range: cover 60% cover 70%;
+    }
+  }
+}
+@keyframes hero-parallax {
+  to {
+    transform: translateY(12%);
+  }
+}
+@keyframes float-layer {
+  from {
+    transform: translateY(48px);
+  }
+  to {
+    transform: translateY(-24px);
+  }
+}
+@keyframes line-fill {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* Reveal once: hidden only after the motion script is running, then each
+   child rises in a 90ms wave. */
+:root[data-motion="ready"] [data-reveal]:not(.is-revealed) > * {
+  opacity: 0;
+  transform: translateY(18px);
+}
+[data-reveal].is-revealed > * {
+  transition:
+    opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 0.25s ease,
+    color 0.25s ease,
+    border-radius 0.25s ease;
+  transition-delay: calc(var(--reveal-index, 0) * 50ms);
+}
+[data-reveal].reveal-done > * {
+  transition-delay: 0s;
+}
+
+/* Pointer tilt: eases back on release, follows the pointer 1:1 while active,
+   with a soft glare that tracks the pointer across the glass. */
+[data-tilt] {
+  position: relative;
+  transform-style: preserve-3d;
+  transition:
+    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.3s ease,
+    background-color 0.25s ease,
+    color 0.25s ease,
+    border-radius 0.25s ease;
+}
+[data-tilt].is-tilting {
+  z-index: 2;
+  transition:
+    box-shadow 0.3s ease,
+    background-color 0.25s ease,
+    color 0.25s ease,
+    border-radius 0.25s ease;
+  box-shadow: 0 30px 60px rgba(0, 51, 54, 0.18);
+}
+[data-tilt]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  border-radius: inherit;
+  background: radial-gradient(
+    circle at var(--glare-x, 50%) var(--glare-y, 0%),
+    rgba(255, 255, 255, 0.35),
+    transparent 55%
+  );
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+[data-tilt].is-tilting::after {
+  opacity: 1;
+}
+/* The tilt owns transform on these cards, so drop their old hover lift. */
+.image-service-card:hover {
+  transform: none;
+}
+
+/* Approach wheel: plays once when it is a third into view. The core lands
+   first, the dashed orbit opens out of it, then each step flies out from the
+   centre to its place on the ring in order (1 at the top, then clockwise).
+   --dx/--dy point from a step back to the wheel centre, in wheel widths. */
+.strategy-wheel {
+  container-type: inline-size;
+}
+.wheel-step-1 {
+  --dx: 0;
+  --dy: 45;
+  --order: 0;
+}
+.wheel-step-2 {
+  --dx: -36;
+  --dy: 26;
+  --order: 1;
+}
+.wheel-step-3 {
+  --dx: -44;
+  --dy: -13;
+  --order: 2;
+}
+.wheel-step-4 {
+  --dx: -20;
+  --dy: -43;
+  --order: 3;
+}
+.wheel-step-5 {
+  --dx: 21;
+  --dy: -43;
+  --order: 4;
+}
+.wheel-step-6 {
+  --dx: 44;
+  --dy: -13;
+  --order: 5;
+}
+.wheel-step-7 {
+  --dx: 36;
+  --dy: 26;
+  --order: 6;
+}
+
+/* Transitions only on the way in, so the hidden state applies instantly. */
+.strategy-wheel.is-revealed .wheel-core,
+.strategy-wheel.is-revealed::before,
+.strategy-wheel.is-revealed .wheel-step {
+  transition:
+    opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.strategy-wheel.is-revealed::before {
+  transition-delay: 0.25s;
+}
+.strategy-wheel.is-revealed .wheel-step {
+  /* Overshoot curve: a rare, illustrative moment, so it may bounce. */
+  transition-delay: calc(0.6s + var(--order) * 0.16s);
+}
+:root[data-motion="ready"] .strategy-wheel:not(.is-revealed) .wheel-core {
+  opacity: 0;
+  transform: scale(0.6);
+}
+:root[data-motion="ready"] .strategy-wheel:not(.is-revealed)::before {
+  opacity: 0;
+  transform: scale(0.5);
+}
+:root[data-motion="ready"] .strategy-wheel:not(.is-revealed) .wheel-step {
+  opacity: 0;
+  transform: translate(-50%, -50%)
+    translate(calc(var(--dx) * 1cqw), calc(var(--dy) * 1cqw)) scale(0.3);
+}
+/* Mobile grid: no ring to fly out to, so the steps rise in order instead. */
+@media (max-width: 560px) {
+  .strategy-wheel.is-revealed .wheel-step {
+    transition-delay: calc(0.3s + var(--order) * 0.09s);
+  }
+  :root[data-motion="ready"] .strategy-wheel:not(.is-revealed) .wheel-step {
+    transform: translateY(16px);
+  }
+  :root[data-motion="ready"] .strategy-wheel:not(.is-revealed) .wheel-core {
+    transform: scale(0.94);
+  }
+}
+
+/* Closing: when the wheel drops below the viewport, the steps fly back into
+   the core in reverse order, then the ring and core fold away. */
+.strategy-wheel.is-closing .wheel-step {
+  transition:
+    opacity 0.25s ease,
+    transform 0.35s cubic-bezier(0.5, 0, 0.75, 0);
+  transition-delay: calc((6 - var(--order)) * 0.05s);
+}
+.strategy-wheel.is-closing::before {
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s cubic-bezier(0.5, 0, 0.75, 0);
+  transition-delay: 0.3s;
+}
+.strategy-wheel.is-closing .wheel-core {
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s cubic-bezier(0.5, 0, 0.75, 0);
+  transition-delay: 0.4s;
+}
+
+/* Cursor: the wheel tilts toward the pointer with the core and steps lifted
+   off it in depth; hovering a step lifts it and dims the rest. */
+.strategy-wheel[data-tilt]::after {
+  display: none;
+}
+.strategy-wheel[data-tilt].is-tilting {
+  box-shadow:
+    inset 0 0 0 40px rgba(0, 170, 167, 0.025),
+    inset 0 0 0 41px #f4f6f8;
+}
+.strategy-wheel.reveal-done .wheel-core {
+  transition:
+    opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+    translate 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.strategy-wheel.reveal-done .wheel-step {
+  transition:
+    opacity 0.25s ease,
+    transform 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+    translate 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    scale 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+  transition-delay: 0s;
+}
+.strategy-wheel.reveal-done.is-tilting .wheel-core {
+  translate: 0 0 24px;
+}
+.strategy-wheel.reveal-done.is-tilting .wheel-step {
+  translate: 0 0 48px;
+}
+.wheel-step i {
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  .strategy-wheel.reveal-done .wheel-step:hover {
+    z-index: 3;
+    scale: 1.08;
+    border-color: var(--green);
+    box-shadow: 0 16px 36px rgba(0, 170, 167, 0.26);
+  }
+  .strategy-wheel.reveal-done .wheel-step:hover i {
+    background: var(--green-bright);
+    color: var(--navy);
+  }
+  .strategy-wheel.reveal-done:has(.wheel-step:hover) .wheel-step:not(:hover) {
+    opacity: 0.45;
+  }
+}
+
+/* Grid-cell cards (industries, why SwitchZero) lift out of their grid as
+   rounded tiles while tilted. */
+.industry-card.is-tilting,
+.feature-grid article.is-tilting,
+.detail-card.is-tilting,
+.resource-grid article.is-tilting {
+  border-radius: 16px;
+}
+
+/* Grid-cell cards turn dark on hover, like the industry cards. */
+.feature-grid article:hover,
+.detail-card:hover,
+.resource-grid article:hover {
+  color: white;
+  background: var(--navy);
+}
+.feature-grid article:hover p,
+.detail-card:hover p,
+.resource-grid article:hover p {
+  color: #b3c0cc;
+}
+.feature-grid article:hover > span,
+.detail-card:hover > span,
+.resource-grid article:hover > span,
+.resource-grid article:hover a {
+  color: var(--green-bright);
+}
+.feature-grid article p,
+.feature-grid article > span,
+.detail-card p,
+.detail-card > span,
+.resource-grid article p,
+.resource-grid article > span,
+.resource-grid article a,
+.industry-card p,
+.industry-card > span,
+.industry-card b {
+  transition: color 0.25s ease;
+}
+
+/* Custom cursor (fine pointers only, added by the motion controller). */
+.cursor-dot,
+.cursor-ring {
+  position: fixed;
+  z-index: 2147483647;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  opacity: 0;
+}
+/* The dot inverts whatever is beneath it, so it reads on any surface. The
+   ring stays in brand teal, since inverting teal and navy gives off-brand
+   pinks. */
+.cursor-dot {
+  mix-blend-mode: difference;
+}
+.cursor-dot {
+  width: 8px;
+  height: 8px;
+  margin: -4px 0 0 -4px;
+  border-radius: 50%;
+  background: white;
+}
+.cursor-ring {
+  width: 40px;
+  height: 40px;
+  margin: -20px 0 0 -20px;
+}
+/* The ring scales on an inner layer so the JS-driven position transform on
+   the outer element is never overwritten. */
+.cursor-ring::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1.5px solid var(--green);
+  border-radius: 50%;
+  box-shadow: 0 0 14px rgba(38, 242, 237, 0.35);
+  transition:
+    scale 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 0.25s ease,
+    border-color 0.25s ease;
+}
+.cursor-label {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: white;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.cursor-visible .cursor-dot,
+.cursor-visible .cursor-ring {
+  opacity: 1;
+  transition: opacity 0.2s ease;
+}
+.cursor-hover .cursor-ring::before {
+  scale: 1.6;
+  background: rgba(0, 170, 167, 0.14);
+  border-color: var(--green-bright);
+}
+.cursor-hover .cursor-dot {
+  opacity: 0;
+}
+.cursor-drag .cursor-ring::before {
+  scale: 1.9;
+  background: rgba(0, 51, 54, 0.9);
+  border-color: var(--green-bright);
+}
+.cursor-drag .cursor-label {
+  opacity: 1;
+}
+.cursor-down .cursor-ring::before {
+  scale: 0.8;
+}
+.cursor-hover.cursor-down .cursor-ring::before {
+  scale: 1.35;
+}
+/* Typing: hand back the native text cursor. */
+.cursor-text .cursor-dot,
+.cursor-text .cursor-ring {
+  opacity: 0;
+}
+.has-cursor,
+.has-cursor * {
+  cursor: none !important;
+}
+.has-cursor
+  :is(input, textarea, [contenteditable="true"]):not(
+    [type="checkbox"],
+    [type="radio"],
+    [type="submit"],
+    [type="button"],
+    [type="range"]
+  ) {
+  cursor: text !important;
 }

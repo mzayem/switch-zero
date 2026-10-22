@@ -147,6 +147,7 @@ function MobileNav({ open, close }: { open: boolean; close: () => void }) {
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
+  const [stuck, setStuck] = useState(false);
 
   useEffect(() => {
     const close = () => setOpen(false);
@@ -154,8 +155,29 @@ export function SiteHeader() {
     return () => window.removeEventListener("resize", close);
   }, []);
 
+  // Compact glass header once the page has scrolled. The gap between the on
+  // and off points stops it flickering when the header height changes.
+  useEffect(() => {
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      setStuck((current) =>
+        current ? window.scrollY > 24 : window.scrollY > 96,
+      );
+    };
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", onScroll);
+    };
+  }, []);
+
   return (
-    <header className="site-header">
+    <header className="site-header" data-stuck={stuck || undefined}>
       <div className="announcement">
         <div className="shell announcement-inner">
           <div

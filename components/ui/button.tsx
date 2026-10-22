@@ -3,13 +3,14 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "cn";
 
 const buttonVariants = cva(
-  "group/button inline-flex shrink-0 items-center justify-center rounded-lg border border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "group/button inline-flex shrink-0 items-center justify-center rounded-lg border border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap touch-manipulation transition-[translate,scale,background-color,border-color,color,box-shadow] duration-160 ease-[cubic-bezier(0.22,1,0.36,1)] outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {
         // Site-wide call-to-action styles.
         sky: "bg-(--green-bright) text-(--navy)! shadow-[0_14px_30px_rgba(38,242,237,0.18)] hover:bg-[#61fff9]",
-        transparent: "border-white/35 bg-white/4 text-white hover:bg-white/10",
+        transparent:
+          "border-white/35 bg-white/6 text-white backdrop-blur-md hover:bg-white/14",
         light: "border-[#aeb9c3] bg-white text-(--navy)",
         dark: "bg-(--navy) text-white",
         default: "bg-primary text-primary-foreground hover:bg-primary/80",
@@ -24,7 +25,7 @@ const buttonVariants = cva(
         link: "text-primary underline-offset-4 hover:underline",
       },
       size: {
-        pill: "min-h-13 gap-5 rounded-full px-5.5 text-[13px] leading-[1.2] font-extrabold hover:-translate-y-0.5",
+        pill: "min-h-13 gap-5 rounded-full px-5.5 text-[13px] leading-[1.2] font-extrabold hover:-translate-y-0.5 active:scale-[0.97] active:duration-0",
         default:
           "h-8 gap-1.5 px-2.5 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2",
         xs: "h-6 gap-1 rounded-[min(var(--radius-md),10px)] px-2 text-xs in-data-[slot=button-group]:rounded-lg has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3",

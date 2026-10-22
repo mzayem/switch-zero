@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
 
 type Consent = {
   analytics: boolean;
@@ -76,14 +76,14 @@ export function CookieBanner() {
                 <b>Necessary</b>
                 <small>Required for core website functions.</small>
               </span>
-              <Checkbox checked disabled />
+              <Switch checked disabled />
             </label>
             <label>
               <span>
                 <b>Analytics</b>
                 <small>Helps measure how the site is used.</small>
               </span>
-              <Checkbox
+              <Switch
                 checked={consent.analytics}
                 onCheckedChange={(analytics) =>
                   setConsent({ ...consent, analytics })
@@ -95,7 +95,7 @@ export function CookieBanner() {
                 <b>Marketing</b>
                 <small>Supports campaign and conversion measurement.</small>
               </span>
-              <Checkbox
+              <Switch
                 checked={consent.marketing}
                 onCheckedChange={(marketing) =>
                   setConsent({ ...consent, marketing })
@@ -107,7 +107,7 @@ export function CookieBanner() {
                 <b>Personalisation</b>
                 <small>Remembers optional preferences.</small>
               </span>
-              <Checkbox
+              <Switch
                 checked={consent.personalisation}
                 onCheckedChange={(personalisation) =>
                   setConsent({ ...consent, personalisation })

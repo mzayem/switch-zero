@@ -13,6 +13,13 @@ import { insightArticles } from "@/lib/content/insights";
 import { services } from "@/lib/content/services";
 import { pageMetadata } from "@/lib/seo";
 import { Button } from "@/components/ui/button";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 export const metadata: Metadata = {
   ...pageMetadata({
@@ -234,36 +241,43 @@ export default function Home() {
             generate and how worthwhile projects should be funded.
           </p>
         </div>
-        <div
-          className="service-rail shell-wide"
+        <Carousel
+          className="service-carousel"
+          opts={{ align: "start" }}
           aria-label="SwitchZero services"
         >
-          {services.slice(0, 7).map((service, index) => (
-            <article className="image-service-card" key={service.slug}>
-              <div
-                className={`service-visual visual-${index + 1}`}
-                style={
-                  service.image
-                    ? {
-                        backgroundImage: `linear-gradient(180deg, transparent, rgba(0,51,54,.8)), url(${service.image})`,
-                      }
-                    : undefined
-                }
-              >
-                <span>{String(index + 1).padStart(2, "0")}</span>
-              </div>
-              <div>
-                <h3>{service.title}</h3>
-                <p>{service.summary}</p>
-                <Link href={`/${service.slug}`}>Learn more</Link>
-              </div>
-            </article>
-          ))}
-        </div>
-        <div className="shell rail-hint">
-          <span>Scroll to explore services</span>
-          <i />
-        </div>
+          <CarouselContent className="service-rail shell-wide">
+            {services.slice(0, 7).map((service, index) => (
+              <CarouselItem className="service-slide" key={service.slug}>
+                <article className="image-service-card">
+                  <div
+                    className={`service-visual visual-${index + 1}`}
+                    style={
+                      service.image
+                        ? {
+                            backgroundImage: `linear-gradient(180deg, transparent, rgba(0,51,54,.8)), url(${service.image})`,
+                          }
+                        : undefined
+                    }
+                  >
+                    <span>{String(index + 1).padStart(2, "0")}</span>
+                  </div>
+                  <div>
+                    <h3>{service.title}</h3>
+                    <p>{service.summary}</p>
+                    <Link href={`/${service.slug}`}>Learn more</Link>
+                  </div>
+                </article>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <div className="shell rail-hint">
+            <span>Drag or use the arrows to explore services</span>
+            <i />
+            <CarouselPrevious variant="light" size="icon-lg" />
+            <CarouselNext variant="light" size="icon-lg" />
+          </div>
+        </Carousel>
       </section>
 
       <section className="section strategy-section">
@@ -282,6 +296,8 @@ export default function Home() {
           </div>
           <div
             className="strategy-wheel"
+            data-sequence
+            data-tilt
             role="img"
             aria-label="SwitchZero approach: tariff switching, market review, efficiency, solar PV, battery storage, monitoring, funding and support"
           >

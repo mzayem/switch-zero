@@ -1,22 +1,36 @@
+import { Fragment } from "react";
 import Link from "next/link";
 import { JsonLd } from "@/components/seo/json-ld";
-import { breadcrumbJsonLd, type BreadcrumbItem } from "@/lib/seo";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import { breadcrumbJsonLd, type BreadcrumbItem as Crumb } from "@/lib/seo";
 
-export function Breadcrumbs({ items }: { items: BreadcrumbItem[] }) {
+export function Breadcrumbs({ items }: { items: Crumb[] }) {
   return (
-    <nav className="breadcrumbs" aria-label="Breadcrumb">
+    <Breadcrumb className="breadcrumbs" aria-label="Breadcrumb">
       <JsonLd data={breadcrumbJsonLd(items)} />
-      <ol>
+      <BreadcrumbList>
         {items.map((item, index) => (
-          <li key={`${item.label}-${index}`}>
-            {item.href ? (
-              <Link href={item.href}>{item.label}</Link>
-            ) : (
-              <span aria-current="page">{item.label}</span>
-            )}
-          </li>
+          <Fragment key={`${item.label}-${index}`}>
+            {index > 0 && <BreadcrumbSeparator>/</BreadcrumbSeparator>}
+            <BreadcrumbItem>
+              {item.href ? (
+                <BreadcrumbLink render={<Link href={item.href} />}>
+                  {item.label}
+                </BreadcrumbLink>
+              ) : (
+                <BreadcrumbPage>{item.label}</BreadcrumbPage>
+              )}
+            </BreadcrumbItem>
+          </Fragment>
         ))}
-      </ol>
-    </nav>
+      </BreadcrumbList>
+    </Breadcrumb>
   );
 }

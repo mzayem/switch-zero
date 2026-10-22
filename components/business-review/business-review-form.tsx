@@ -9,7 +9,14 @@ import {
 } from "@/actions/companies/actions";
 import { Choices } from "@/components/business-review/choices";
 import { Icon } from "@/components/business-review/icon";
+import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -81,6 +88,8 @@ const initialForm: FormState = {
 
 export function BusinessReviewForm() {
   const [step, setStep] = useState(0);
+  // Unset until the user changes step, so the first step doesn't animate on load.
+  const [direction, setDirection] = useState<"forward" | "back">();
   const [form, setForm] = useState<FormState>(initialForm);
   const [query, setQuery] = useState("");
   const [matches, setMatches] = useState<CompanyMatch[]>([]);
@@ -94,7 +103,7 @@ export function BusinessReviewForm() {
   const [error, setError] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [done, setDone] = useState(false);
-  const dialog = useRef<HTMLDialogElement>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
   const card = useRef<HTMLElement>(null);
   const heading = useRef<HTMLHeadingElement>(null);
   const searchSeq = useRef(0);
@@ -116,16 +125,17 @@ export function BusinessReviewForm() {
   function goTo(next: number) {
     moved.current = true;
     setError("");
+    setDirection(next < step ? "back" : "forward");
     setStep(next);
   }
 
   function openDialog() {
-    if (dialog.current && !dialog.current.open) dialog.current.showModal();
+    setDialogOpen(true);
   }
   function closeDialog() {
     ++detailSeq.current;
     setLoadingNumber("");
-    dialog.current?.close();
+    setDialogOpen(false);
   }
 
   async function search() {
@@ -415,6 +425,7 @@ export function BusinessReviewForm() {
     <section
       ref={card}
       className="review-card"
+      data-direction={direction}
       aria-label="Business energy review"
     >
       <div className="card-top">
@@ -903,164 +914,155 @@ export function BusinessReviewForm() {
         </>
       )}
 
-      <dialog
-        ref={dialog}
-        className="company-dialog"
-        aria-labelledby="company-dialog-title"
-        onClick={(e) => {
-          if (e.target === e.currentTarget) closeDialog();
-        }}
-        onClose={() => {
-          ++detailSeq.current;
-          setLoadingNumber("");
+      <Dialog
+        open={dialogOpen}
+        onOpenChange={(open) => {
+          if (!open) closeDialog();
         }}
       >
-        <div className="company-dialog-inner">
-          <div className="company-dialog-head">
-            {preview && matches.length > 1 ? (
-              <button
-                type="button"
-                className="dialog-back"
-                onClick={() => setPreview(null)}
-              >
-                <Icon name="back" size={16} />
-                All results
-              </button>
-            ) : (
-              <span className="dialog-count">
-                {matches.length} {matches.length === 1 ? "match" : "matches"} on
-                Companies House
-              </span>
-            )}
-            <button
-              type="button"
-              className="dialog-close"
-              aria-label="Close"
-              onClick={closeDialog}
-            >
-              <Icon name="close" />
-            </button>
-          </div>
-
-          {preview ? (
-            <div className="company-details">
-              <h2 id="company-dialog-title">{preview.name}</h2>
-              <span
-                className={`status-pill ${preview.status === "Active" ? "active" : ""}`}
-              >
-                {preview.status}
-              </span>
-              <dl>
-                <div>
-                  <dt>Company number</dt>
-                  <dd>{preview.number}</dd>
-                </div>
-                <div>
-                  <dt>Registered office</dt>
-                  <dd>{preview.address || "Not listed"}</dd>
-                </div>
-                <div>
-                  <dt>Company type</dt>
-                  <dd>{preview.type || "Not listed"}</dd>
-                </div>
-                <div>
-                  <dt>Incorporated</dt>
-                  <dd>{formatDate(preview.incorporated) || "Not listed"}</dd>
-                </div>
-                {preview.dissolved && (
-                  <div>
-                    <dt>Dissolved</dt>
-                    <dd>{formatDate(preview.dissolved)}</dd>
-                  </div>
-                )}
-                <div>
-                  <dt>Nature of business</dt>
-                  <dd>
-                    {preview.sicCodes.length
-                      ? `SIC ${preview.sicCodes.join(", ")}`
-                      : "No SIC codes listed"}
-                    {preview.businessType !== "Other" && (
-                      <small>Looks like: {preview.businessType}</small>
-                    )}
-                  </dd>
-                </div>
-              </dl>
-              {preview.status !== "Active" && (
-                <p className="notice">
-                  This company isn’t listed as active. Check you’ve chosen the
-                  right one.
-                </p>
+        <DialogContent className="company-dialog" showCloseButton={false}>
+          <div className="company-dialog-inner">
+            <div className="company-dialog-head">
+              {preview && matches.length > 1 ? (
+                <button
+                  type="button"
+                  className="dialog-back"
+                  onClick={() => setPreview(null)}
+                >
+                  <Icon name="back" size={16} />
+                  All results
+                </button>
+              ) : (
+                <span className="dialog-count">
+                  {matches.length} {matches.length === 1 ? "match" : "matches"}{" "}
+                  on Companies House
+                </span>
               )}
-              <a
-                className="text-button"
-                href={preview.link}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                View on Companies House
-              </a>
-              <button
-                type="button"
-                className="primary-button continue"
-                onClick={() => selectCompany(preview)}
-              >
-                Use this business and continue
-              </button>
+              <DialogClose className="dialog-close" aria-label="Close">
+                <Icon name="close" />
+              </DialogClose>
             </div>
-          ) : (
-            <>
-              <h2 id="company-dialog-title" className="dialog-title">
-                Select your business
-              </h2>
-              {previewError && <p className="form-error">{previewError}</p>}
-              <ul className="result-list">
-                {matches.map((match) => (
-                  <li key={match.number}>
-                    <button
-                      type="button"
-                      className="business-result"
-                      onClick={() => viewCompany(match)}
-                      disabled={!!loadingNumber}
-                    >
-                      <div>
-                        <strong>{match.name}</strong>
-                        <span>{match.address}</span>
-                        <small>
-                          {match.number} · {match.status}
-                          {match.incorporated
-                            ? ` · Inc. ${formatDate(match.incorporated)}`
-                            : ""}
-                        </small>
-                      </div>
-                      {loadingNumber === match.number ? (
-                        <Icon name="spinner" />
-                      ) : (
-                        <Icon name="back" size={16} />
+
+            {preview ? (
+              <div className="company-details">
+                <DialogTitle>{preview.name}</DialogTitle>
+                <Badge
+                  className={`status-pill ${preview.status === "Active" ? "active" : ""}`}
+                >
+                  {preview.status}
+                </Badge>
+                <dl>
+                  <div>
+                    <dt>Company number</dt>
+                    <dd>{preview.number}</dd>
+                  </div>
+                  <div>
+                    <dt>Registered office</dt>
+                    <dd>{preview.address || "Not listed"}</dd>
+                  </div>
+                  <div>
+                    <dt>Company type</dt>
+                    <dd>{preview.type || "Not listed"}</dd>
+                  </div>
+                  <div>
+                    <dt>Incorporated</dt>
+                    <dd>{formatDate(preview.incorporated) || "Not listed"}</dd>
+                  </div>
+                  {preview.dissolved && (
+                    <div>
+                      <dt>Dissolved</dt>
+                      <dd>{formatDate(preview.dissolved)}</dd>
+                    </div>
+                  )}
+                  <div>
+                    <dt>Nature of business</dt>
+                    <dd>
+                      {preview.sicCodes.length
+                        ? `SIC ${preview.sicCodes.join(", ")}`
+                        : "No SIC codes listed"}
+                      {preview.businessType !== "Other" && (
+                        <small>Looks like: {preview.businessType}</small>
                       )}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-              {matches.length === 1 && loadingNumber && (
-                <p className="scan-status" role="status">
-                  <Icon name="spinner" />
-                  Loading company details…
-                </p>
-              )}
-              <button
-                type="button"
-                className="text-button"
-                onClick={() => {
-                  closeDialog();
-                  enterManually();
-                }}
-              >
-                None of these — enter my details manually
-              </button>
-            </>
-          )}
-        </div>
-      </dialog>
+                    </dd>
+                  </div>
+                </dl>
+                {preview.status !== "Active" && (
+                  <p className="notice">
+                    This company isn’t listed as active. Check you’ve chosen the
+                    right one.
+                  </p>
+                )}
+                <a
+                  className="text-button"
+                  href={preview.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  View on Companies House
+                </a>
+                <button
+                  type="button"
+                  className="primary-button continue"
+                  onClick={() => selectCompany(preview)}
+                >
+                  Use this business and continue
+                </button>
+              </div>
+            ) : (
+              <>
+                <DialogTitle className="dialog-title">
+                  Select your business
+                </DialogTitle>
+                {previewError && <p className="form-error">{previewError}</p>}
+                <ul className="result-list">
+                  {matches.map((match) => (
+                    <li key={match.number}>
+                      <button
+                        type="button"
+                        className="business-result"
+                        onClick={() => viewCompany(match)}
+                        disabled={!!loadingNumber}
+                      >
+                        <div>
+                          <strong>{match.name}</strong>
+                          <span>{match.address}</span>
+                          <small>
+                            {match.number} · {match.status}
+                            {match.incorporated
+                              ? ` · Inc. ${formatDate(match.incorporated)}`
+                              : ""}
+                          </small>
+                        </div>
+                        {loadingNumber === match.number ? (
+                          <Icon name="spinner" />
+                        ) : (
+                          <Icon name="back" size={16} />
+                        )}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+                {matches.length === 1 && loadingNumber && (
+                  <p className="scan-status" role="status">
+                    <Icon name="spinner" />
+                    Loading company details…
+                  </p>
+                )}
+                <button
+                  type="button"
+                  className="text-button"
+                  onClick={() => {
+                    closeDialog();
+                    enterManually();
+                  }}
+                >
+                  None of these — enter my details manually
+                </button>
+              </>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 }
