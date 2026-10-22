@@ -7,6 +7,7 @@ import { FaqList } from "@/components/sections/faq-list";
 import { JsonLd } from "@/components/seo/json-ld";
 import { insightArticles } from "@/lib/content/insights";
 import { pageMetadata, articleJsonLd, isoDate } from "@/lib/seo";
+import { Button } from "@/components/ui/button";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -90,9 +91,9 @@ export default async function ArticlePage({ params }: Props) {
                 bill, contract position and decision deadline. The review can
                 then focus on facts rather than generic market commentary.
               </p>
-              <Link className="button button-primary" href="/contact">
+              <Button nativeButton={false} render={<Link href="/contact" />}>
                 Get in touch
-              </Link>
+              </Button>
             </div>
             <FaqList
               faqs={[

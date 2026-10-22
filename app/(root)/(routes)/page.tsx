@@ -12,6 +12,7 @@ import { industries } from "@/lib/content/industries";
 import { insightArticles } from "@/lib/content/insights";
 import { services } from "@/lib/content/services";
 import { pageMetadata } from "@/lib/seo";
+import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
   ...pageMetadata({
@@ -112,9 +113,12 @@ export default function Home() {
             </div>
           </div>
           <div className="supplier-action">
-            <Link className="button button-primary" href="/book-energy-review">
+            <Button
+              nativeButton={false}
+              render={<Link href="/book-energy-review" />}
+            >
               Compare my options
-            </Link>
+            </Button>
             <p>
               Supplier availability varies by requirement. Inclusion here does
               not mean every supplier will quote for every business.
@@ -184,15 +188,19 @@ export default function Home() {
               presented clearly, with support through contracting and beyond.
             </p>
             <div className="hero-actions">
-              <Link
-                className="button button-primary"
-                href="/commercial-tariff-switching"
+              <Button
+                nativeButton={false}
+                render={<Link href="/commercial-tariff-switching" />}
               >
                 Review my current contract
-              </Link>
-              <Link className="button button-ghost" href="/contact">
+              </Button>
+              <Button
+                variant="transparent"
+                nativeButton={false}
+                render={<Link href="/contact" />}
+              >
                 Get in touch
-              </Link>
+              </Button>
             </div>
           </div>
           <div className="procurement-list">
@@ -399,9 +407,13 @@ export default function Home() {
               other. It is not a saving promise and not every organisation will
               need every step.
             </p>
-            <Link className="button button-dark" href="/contact">
+            <Button
+              variant="dark"
+              nativeButton={false}
+              render={<Link href="/contact" />}
+            >
               See what could work for my organisation
-            </Link>
+            </Button>
           </div>
           <CostPathwayChart />
         </div>

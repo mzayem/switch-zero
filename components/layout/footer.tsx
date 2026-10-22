@@ -4,6 +4,7 @@ import { RoundBrandLogo } from "@/components/brand/round-brand-logo";
 import { CookieSettingsButton } from "@/components/cookies/cookie-settings-button";
 import { companyDetails } from "@/lib/content/company";
 import { industryNav, serviceNav } from "@/lib/content/navigation";
+import { Button } from "@/components/ui/button";
 
 export function Footer() {
   return (
@@ -24,9 +25,9 @@ export function Footer() {
             <span>{companyDetails.registration}</span>
             <span>Company number: {companyDetails.companyNumber}</span>
           </address>
-          <Link className="button button-primary" href="/contact">
+          <Button nativeButton={false} render={<Link href="/contact" />}>
             Get in touch
-          </Link>
+          </Button>
           <a
             className="ombudsman-mark"
             href="https://www.energyombudsman.org/how-we-can-help/energy-brokers"

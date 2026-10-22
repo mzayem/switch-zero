@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 function numberValue(value: string) {
   const parsed = Number(value.replace(/,/g, ""));
@@ -134,12 +135,13 @@ export function SavingsCalculator() {
             {result.percent.toFixed(1)}%
           </small>
         </div>
-        <Link
-          className="button button-primary button-wide"
-          href="/contact?service=Full%20market%20review"
+        <Button
+          className="w-full"
+          nativeButton={false}
+          render={<Link href="/contact?service=Full%20market%20review" />}
         >
           Request a full market review
-        </Link>
+        </Button>
         <p className="disclaimer">
           Figures are estimates for initial comparison only and do not represent
           a guaranteed quotation or saving. Actual pricing depends on market

@@ -7,6 +7,11 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
+        // Site-wide call-to-action styles.
+        sky: "bg-(--green-bright) text-(--navy)! shadow-[0_14px_30px_rgba(38,242,237,0.18)] hover:bg-[#61fff9]",
+        transparent: "border-white/35 bg-white/4 text-white hover:bg-white/10",
+        light: "border-[#aeb9c3] bg-white text-(--navy)",
+        dark: "bg-(--navy) text-white",
         default: "bg-primary text-primary-foreground hover:bg-primary/80",
         outline:
           "border-border bg-background hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50",
@@ -19,6 +24,7 @@ const buttonVariants = cva(
         link: "text-primary underline-offset-4 hover:underline",
       },
       size: {
+        pill: "min-h-13 gap-5 rounded-full px-5.5 text-[13px] leading-[1.2] font-extrabold hover:-translate-y-0.5",
         default:
           "h-8 gap-1.5 px-2.5 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2",
         xs: "h-6 gap-1 rounded-[min(var(--radius-md),10px)] px-2 text-xs in-data-[slot=button-group]:rounded-lg has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3",
@@ -33,16 +39,16 @@ const buttonVariants = cva(
       },
     },
     defaultVariants: {
-      variant: "default",
-      size: "default",
+      variant: "sky",
+      size: "pill",
     },
   },
 );
 
 function Button({
   className,
-  variant = "default",
-  size = "default",
+  variant = "sky",
+  size = "pill",
   ...props
 }: ButtonPrimitive.Props & VariantProps<typeof buttonVariants>) {
   return (

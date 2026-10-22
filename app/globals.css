@@ -52,6 +52,7 @@
   --sidebar-ring: oklch(0.708 0 0);
 }
 
+@layer base {
 * {
   box-sizing: border-box;
 }
@@ -101,6 +102,7 @@ button,
 summary,
 a {
   -webkit-tap-highlight-color: transparent;
+}
 }
 :focus-visible {
   outline: 3px solid #26f2ed;
@@ -383,60 +385,6 @@ a {
   height: 2px;
   background: var(--green);
 }
-.button {
-  min-height: 52px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 20px;
-  padding: 0 22px;
-  border-radius: 999px;
-  border: 1px solid transparent;
-  cursor: pointer;
-  font-size: 13px;
-  line-height: 1.2;
-  font-weight: 800;
-  transition:
-    transform 0.18s ease,
-    background 0.18s ease,
-    border-color 0.18s ease;
-}
-.button:hover {
-  transform: translateY(-2px);
-}
-.button:disabled {
-  opacity: 0.6;
-  cursor: wait;
-  transform: none;
-}
-.button-primary {
-  color: #003336;
-  background: var(--green-bright);
-  box-shadow: 0 14px 30px rgba(38, 242, 237, 0.18);
-}
-.button-primary:hover {
-  background: #61fff9;
-}
-.button-ghost {
-  color: white;
-  border-color: rgba(255, 255, 255, 0.35);
-  background: rgba(255, 255, 255, 0.04);
-}
-.button-ghost:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
-.button-outline {
-  color: var(--navy);
-  background: white;
-  border-color: #aeb9c3;
-}
-.button-dark {
-  color: white;
-  background: var(--navy);
-}
-.button-wide {
-  width: 100%;
-}
 .text-cta {
   display: inline-flex;
   align-items: center;
@@ -684,7 +632,7 @@ textarea:focus {
 :where(main) :where(p) + :where(p:not(.eyebrow)) {
   margin-top: 16px;
 }
-:where(main) :where(p) + :where(.button) {
+:where(main) :where(p) + :where([data-slot="button"]) {
   margin-top: 32px;
 }
 :where(main) :where(p) + :where(.text-cta:not(.case-content *)) {
@@ -2988,7 +2936,7 @@ textarea:focus {
     flex-direction: column;
     text-align: center;
   }
-  .supplier-action .button {
+  .supplier-action [data-slot="button"] {
     align-self: center;
   }
   .split-media-grid,
@@ -3143,7 +3091,7 @@ textarea:focus {
     align-items: stretch;
     flex-direction: column;
   }
-  .hero-actions .button {
+  .hero-actions [data-slot="button"] {
     width: 100%;
   }
   .hero-trust {

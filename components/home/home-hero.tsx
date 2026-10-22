@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { BusinessReviewForm } from "@/components/business-review/business-review-form";
+import { Button } from "@/components/ui/button";
 
 // Homepage hero: headline, calls to action and the energy review form.
 export function HomeHero() {
@@ -20,12 +21,16 @@ export function HomeHero() {
             how their sites are powered.
           </p>
           <div className="hero-actions">
-            <Link className="button button-primary" href="/contact">
+            <Button nativeButton={false} render={<Link href="/contact" />}>
               Get in touch
-            </Link>
-            <Link className="button button-ghost" href="/book-energy-review">
+            </Button>
+            <Button
+              variant="transparent"
+              nativeButton={false}
+              render={<Link href="/book-energy-review" />}
+            >
               Book a free energy review
-            </Link>
+            </Button>
           </div>
           <ul className="hero-trust" aria-label="What SwitchZero offers">
             <li>Commercial tariff comparison</li>

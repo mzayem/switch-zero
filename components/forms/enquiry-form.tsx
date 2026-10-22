@@ -6,6 +6,7 @@ import { submitEnquiry } from "@/actions/enquiries/actions";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 
 type EnquiryStatus = "idle" | "sending" | "success" | "error";
 
@@ -96,13 +97,9 @@ export function EnquiryForm() {
           enquiry. See the <Link href="/privacy">privacy policy</Link>.
         </span>
       </label>
-      <button
-        className="button button-primary button-wide"
-        type="submit"
-        disabled={status === "sending"}
-      >
+      <Button type="submit" disabled={status === "sending"} className="w-full">
         {status === "sending" ? "Sending…" : "Send message"}
-      </button>
+      </Button>
       <p className={`form-status ${status}`} aria-live="polite">
         {message}
       </p>

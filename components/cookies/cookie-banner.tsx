@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 
 type Consent = {
@@ -116,23 +117,22 @@ export function CookieBanner() {
           </div>
         )}
         <div className="cookie-actions">
-          <button
+          <Button
             type="button"
-            className="button button-outline"
+            variant="light"
             onClick={() => save(defaultConsent)}
           >
             Reject optional
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
-            className="button button-outline"
+            variant="light"
             onClick={() => setManaging(true)}
           >
             Manage choices
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
-            className="button button-primary"
             onClick={() =>
               save(
                 managing
@@ -142,7 +142,7 @@ export function CookieBanner() {
             }
           >
             {managing ? "Save choices" : "Accept optional"}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

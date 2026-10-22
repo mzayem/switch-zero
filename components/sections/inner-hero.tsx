@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
+import { Button } from "@/components/ui/button";
 
 export function InnerHero({
   eyebrow,
@@ -34,12 +35,16 @@ export function InnerHero({
         <h1>{title}</h1>
         <p>{intro}</p>
         <div className="hero-actions">
-          <Link className="button button-primary" href="/contact">
+          <Button nativeButton={false} render={<Link href="/contact" />}>
             Get in touch
-          </Link>
-          <Link className="button button-ghost" href="/book-energy-review">
+          </Button>
+          <Button
+            variant="transparent"
+            nativeButton={false}
+            render={<Link href="/book-energy-review" />}
+          >
             Book a free energy review
-          </Link>
+          </Button>
         </div>
         {children}
       </div>

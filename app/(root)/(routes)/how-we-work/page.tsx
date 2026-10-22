@@ -3,6 +3,7 @@ import Link from "next/link";
 import { FinalCta } from "@/components/layout/final-cta";
 import { InnerHero } from "@/components/sections/inner-hero";
 import { pageMetadata } from "@/lib/seo";
+import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = pageMetadata({
   title: "How We Work",
@@ -69,9 +70,9 @@ export default function HowWeWorkPage() {
               changing are usually the best starting point. For projects,
               interval data, operating hours and site access may follow.
             </p>
-            <Link className="button button-primary" href="/resources">
+            <Button nativeButton={false} render={<Link href="/resources" />}>
               See the review checklist
-            </Link>
+            </Button>
           </div>
         </div>
       </section>

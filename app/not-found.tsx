@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { SiteShell } from "@/components/layout/site-shell";
+import { Button } from "@/components/ui/button";
 
 // Unmatched URLs render outside the (root) layout, so add the shell here.
 export default function NotFound() {
@@ -14,12 +15,20 @@ export default function NotFound() {
             SwitchtoZero about a live requirement.
           </p>
           <div className="hero-actions">
-            <Link className="button button-dark" href="/">
+            <Button
+              variant="dark"
+              nativeButton={false}
+              render={<Link href="/" />}
+            >
               Back to home
-            </Link>
-            <Link className="button button-outline" href="/contact">
+            </Button>
+            <Button
+              variant="light"
+              nativeButton={false}
+              render={<Link href="/contact" />}
+            >
               Get in touch
-            </Link>
+            </Button>
           </div>
         </div>
       </main>
